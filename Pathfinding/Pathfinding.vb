@@ -116,16 +116,22 @@ Public Class Pathfinding
         Return newPoint
     End Function
 
-    Private Function isWall(newPoint As Point, newDirection As Direction) As Boolean
-        ' check boundary
-        If newPoint.X < 0 Or newPoint.Y < 0 Or newPoint.X > ColumnCount And newPoint.Y > RowCount Then
+    Private Function inArea(newPoint As Point) As Boolean
+        If newPoint.X >= 0 And newPoint.Y >= 0 And newPoint.X < ColumnCount And newPoint.Y < RowCount Then
             Return True
         End If
+
+        Return False
+    End Function
+
+    Private Function isWall(newPoint As Point, newDirection As Direction) As Boolean
+        ' check boundary
+        If Not inArea(newPoint) Then Return True
 
         Dim index As Integer = GridView.GetIndex(GetNeighborPoint(newPoint, newDirection), ColumnCount)
 
         If index >= lstGridItem.Count Or index < 0 Then
-            Return False
+            Return True
         End If
 
         Dim leftItem As GridItem = lstGridItem.Item(index)
@@ -137,37 +143,37 @@ Public Class Pathfinding
     End Function
 
     Private Function SetValueOfSurroundingBlock(curItem As GridItem, curPoint As Point, newDirection As Direction, ByRef lstBlocksWithNewValues As List(Of Point)) As GridValueReturnType
-        Dim neightborPoint As Point = GetNeighborPoint(curPoint, newDirection)
+        Dim neighborPoint As Point = GetNeighborPoint(curPoint, newDirection)
 
         ' neighbor griditem on map?
-        If neightborPoint.X >= 0 And neightborPoint.Y >= 0 And neightborPoint.X < ColumnCount And neightborPoint.Y < RowCount Then
-            Dim nextItem As GridItem = lstGridItem.Item(GridView.GetIndex(neightborPoint.X, neightborPoint.Y, myColumnCount))
-
-            If nextItem.value < 0.0 And nextItem.GetItemType() <> GridItemType.WallItem Then
-                If newDirection = Direction.Left Or newDirection = Direction.Top Or newDirection = Direction.Right Or newDirection = Direction.Bottom Then
-                    ' horizinal & vertical
-                    nextItem.value_rel = 1
-                Else
-                    ' diagonal blocks
-                    Dim factor As Integer = 1
-                    nextItem.value_rel = Math.Sqrt(factor * factor + factor * factor)
-                End If
-
-                nextItem.value = curItem.value + nextItem.value_rel
-
-                lstBlocksWithNewValues.Add(neightborPoint)
-
-                Return GridValueReturnType.ValueUpdated
-            End If
-
-            If nextItem.GetItemType() = GridItemType.WallItem Then
-                Return GridValueReturnType.IsWall
-            End If
-
-            Return GridValueReturnType.Unchanged
+        If Not inArea(neighborPoint) Then
+            Return GridValueReturnType.DoesNotExists
         End If
 
-        Return GridValueReturnType.DoesNotExists
+        Dim nextItem As GridItem = lstGridItem.Item(GridView.GetIndex(neighborPoint.X, neighborPoint.Y, myColumnCount))
+
+        If nextItem.value < 0.0 And nextItem.GetItemType() <> GridItemType.WallItem Then
+            If newDirection = Direction.Left Or newDirection = Direction.Top Or newDirection = Direction.Right Or newDirection = Direction.Bottom Then
+                ' horizinal & vertical
+                nextItem.value_rel = 1
+            Else
+                ' diagonal blocks
+                Dim factor As Integer = 1
+                nextItem.value_rel = Math.Sqrt(factor * factor + factor * factor)
+            End If
+
+            nextItem.value = curItem.value + nextItem.value_rel
+
+            lstBlocksWithNewValues.Add(neighborPoint)
+
+            Return GridValueReturnType.ValueUpdated
+        End If
+
+        If nextItem.GetItemType() = GridItemType.WallItem Then
+            Return GridValueReturnType.IsWall
+        End If
+
+        Return GridValueReturnType.Unchanged
     End Function
 
     Public Sub UpdateGridList(lstGridItem As List(Of GridItem))
