@@ -53,8 +53,10 @@ Public Class PathfindingMultible
 
                     ' rotation limiter active?
                     If maxRotations > 0 Then
+                        Dim curRotations As Integer = CountRotations(lstNewPathPoints)
+
                         ' throw away paths, that use to many rotations
-                        If CountDirectionChanges(lstNewPathPoints) > maxRotations Then
+                        If curRotations > maxRotations Then
                             lstNewPathPoints.Clear()
                             lstCurPathPoints.Clear()
                             Exit Sub
@@ -80,12 +82,6 @@ Public Class PathfindingMultible
     Public Overrides Function FindPath(ByRef lstPathPoints As List(Of List(Of PathPoint))) As PathMessageType
         Dim lstPathPointsTemp As New List(Of List(Of PathPoint))
         Dim returnValue As PathMessageType = PathMessageType.Running
-
-        Dim lstDirections As New List(Of Direction)
-        lstDirections.Add(Direction.Left)
-        lstDirections.Add(Direction.Top)
-        lstDirections.Add(Direction.Right)
-        lstDirections.Add(Direction.Bottom)
 
         If lstPathPoints Is Nothing Then
             lstPathPoints = New List(Of List(Of PathPoint))
@@ -115,7 +111,7 @@ Public Class PathfindingMultible
         Dim curPathPoint As New PathPoint
         curPathPoint.Point = New Point(StopPoint.X, StopPoint.Y)
         ' generate random Direction for stoppoint
-        curPathPoint.Direction = lstDirections.Item(RandomGen.nextInt(0, lstDirections.Count))
+        curPathPoint.Direction = Direction.Left
 
         Dim lstPossiblePoints As List(Of PathPoint) = New List(Of PathPoint)
         lstPossiblePoints.Add(curPathPoint)
@@ -134,7 +130,9 @@ Public Class PathfindingMultible
             End If
         End If
 
-        Dim maxRotations As Integer = CountDirectionChanges(lstPathPoints)
+        Dim maxRotations As Integer = CountRotations(lstPathPoints)
+
+        'Debug.Print("Max Rotations: " + maxRotations.ToString)
 
         ' compute paths for given amount of max. rotations
         ComputePath(lstPathPointsTemp, lstPossiblePoints, maxRotations + 1)

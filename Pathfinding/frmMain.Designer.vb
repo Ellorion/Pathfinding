@@ -140,6 +140,8 @@ Partial Class frmMain
         'ckbMultiblePaths
         '
         Me.ckbMultiblePaths.AutoSize = True
+        Me.ckbMultiblePaths.Checked = True
+        Me.ckbMultiblePaths.CheckState = System.Windows.Forms.CheckState.Checked
         Me.ckbMultiblePaths.Location = New System.Drawing.Point(285, 48)
         Me.ckbMultiblePaths.Name = "ckbMultiblePaths"
         Me.ckbMultiblePaths.Size = New System.Drawing.Size(92, 17)
@@ -292,7 +294,7 @@ Partial Class frmMain
         Me.StatusStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsStatus})
         Me.StatusStrip.Location = New System.Drawing.Point(0, 474)
         Me.StatusStrip.Name = "StatusStrip"
-        Me.StatusStrip.Size = New System.Drawing.Size(668, 22)
+        Me.StatusStrip.Size = New System.Drawing.Size(669, 22)
         Me.StatusStrip.TabIndex = 3
         Me.StatusStrip.Text = "StatusStrip1"
         '
@@ -306,7 +308,7 @@ Partial Class frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(668, 496)
+        Me.ClientSize = New System.Drawing.Size(669, 496)
         Me.Controls.Add(Me.StatusStrip)
         Me.Controls.Add(Me.grpOptions)
         Me.Controls.Add(Me.grpPathfinding)

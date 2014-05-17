@@ -10,12 +10,6 @@ Public Class PathfindingSingle
         Dim lstPathPointsTemp As New List(Of PathPoint)
         Dim returnValue As PathMessageType = PathMessageType.Running
 
-        Dim lstDirections As New List(Of Direction)
-        lstDirections.Add(Direction.Left)
-        lstDirections.Add(Direction.Top)
-        lstDirections.Add(Direction.Right)
-        lstDirections.Add(Direction.Bottom)
-
         If lstPathPoints Is Nothing Then
             lstPathPoints = New List(Of List(Of PathPoint))
         End If
@@ -46,7 +40,7 @@ Public Class PathfindingSingle
         Dim curPathPoint As New PathPoint
         curPathPoint.Point = New Point(StopPoint.X, StopPoint.Y)
         ' generate random Direction for stoppoint
-        curPathPoint.Direction = lstDirections.Item(RandomGen.nextInt(0, lstDirections.Count))
+        curPathPoint.Direction = Direction.Left
 
         Dim lstPossiblePoints As New List(Of PathPoint)
 

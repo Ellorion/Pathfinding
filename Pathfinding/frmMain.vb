@@ -66,13 +66,8 @@ Public Class frmMain
         gv.CreateGrid(nudColumnCount.Value, nudRowCount.Value)
         gv.GridSize = nudGridSize.Value
 
-        gv.SetTypePosition(GridItemType.StartItem, 2 * gv.GridSize, 1 * gv.GridSize)
-        gv.SetTypePosition(GridItemType.StopItem, 17 * gv.GridSize, 8 * gv.GridSize)
-
-        gv.SetTypePosition(GridItemType.WallItem, 9 * gv.GridSize, 2 * gv.GridSize)
-        gv.SetTypePosition(GridItemType.WallItem, 9 * gv.GridSize, 3 * gv.GridSize)
-        gv.SetTypePosition(GridItemType.WallItem, 9 * gv.GridSize, 4 * gv.GridSize)
-        gv.SetTypePosition(GridItemType.WallItem, 9 * gv.GridSize, 5 * gv.GridSize)
+        gv.SetTypePosition(GridItemType.StartItem, 0, 0)
+        gv.SetTypePosition(GridItemType.StopItem, 19, 9)
 
         Randomize()
 
@@ -83,7 +78,7 @@ Public Class frmMain
     End Sub
 
     Private Sub pbImage_MouseClick(sender As Object, e As System.Windows.Forms.MouseEventArgs) Handles pbImage.MouseClick
-        gv.SetTypePosition(posType, e.X, e.Y)
+        gv.SetTypePosition(posType, Math.Floor(e.X / gv.GridSize), Math.Floor(e.Y / gv.GridSize))
     End Sub
 
     Private Sub btnStartPos_Click(sender As System.Object, e As System.EventArgs) Handles btnStartPos.Click

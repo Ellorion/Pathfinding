@@ -289,7 +289,6 @@ Public MustInherit Class Pathfinding
         Return True
     End Function
 
-
     Protected Sub ResetValues()
         For Each myItem As GridItem In lstGridItem
             myItem.SetItemType(myItem.GetItemType(), True)
@@ -316,15 +315,16 @@ Public MustInherit Class Pathfinding
         RaiseEvent GridItemValueChanged()
     End Sub
 
-    Protected Function CountDirectionChanges(lstPathPoints As List(Of PathPoint)) As Integer
+    Public Shared Function CountRotations(lstPathPoints As List(Of PathPoint)) As Integer
         Dim numRotation As Integer = 0
-        Dim lastDirection As Direction = Nothing
+
+        If lstPathPoints.Count = 0 Then
+            Return numRotation
+        End If
+
+        Dim lastDirection As Direction = lstPathPoints.Item(0).Direction
 
         For Each myPathPoint As PathPoint In lstPathPoints
-            If lastDirection = Nothing Then
-                lastDirection = myPathPoint.Direction
-            End If
-
             If lastDirection <> myPathPoint.Direction Then
                 numRotation += 1
             End If
@@ -335,9 +335,9 @@ Public MustInherit Class Pathfinding
         Return numRotation
     End Function
 
-    Protected Function CountDirectionChanges(lstPathPoints As List(Of List(Of PathPoint))) As Integer
+    Public Shared Function CountRotations(lstPathPoints As List(Of List(Of PathPoint))) As Integer
         If lstPathPoints.Count = 1 Then
-            Return CountDirectionChanges(lstPathPoints.Item(0))
+            Return CountRotations(lstPathPoints.Item(0))
         End If
 
         Return 0

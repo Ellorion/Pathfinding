@@ -44,9 +44,9 @@ Public Class GridView
         End Set
     End Property
 
-    Public Sub SetTypePosition(newType As System.Windows.Forms.GridItemType, x As Integer, y As Integer)
-        Dim item_x As Integer = Math.Floor(x / GridSize)
-        Dim item_y As Integer = Math.Floor(y / GridSize)
+    Public Sub SetTypePosition(newType As GridItemType, x As Integer, y As Integer)
+        Dim item_x As Integer = x 'Math.Floor(x / GridSize)
+        Dim item_y As Integer = y 'Math.Floor(y / GridSize)
         Dim posIndex As Integer = GetIndex(item_x, item_y, ColumnCount)
 
         If item_x > ColumnCount - 1 Then
