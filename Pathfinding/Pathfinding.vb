@@ -276,6 +276,7 @@ Public MustInherit Class Pathfinding
             myPathPoint.EstimationValue = myPathPoint.StepValue
             myPathPoint.Direction = newDirection
 
+            ' double estimation for points, who are not in the direction as before
             If curPathPoint.Direction <> newDirection Then
                 myPathPoint.EstimationValue += myPathPoint.EstimationValue
             End If
@@ -300,7 +301,7 @@ Public MustInherit Class Pathfinding
 
     Protected Function GetGridValue(x As Integer, y As Integer) As Single
         ' coordinates are in the grid?
-        If x >= 0 And y >= 0 And x < ColumnCount And y < RowCount Then
+        If inArea(New Point(x, y)) Then
             Dim value As Single = lstGridItem(GridView.GetIndex(x, y, ColumnCount)).GridValue
 
             If value >= 0.0 Then Return value
