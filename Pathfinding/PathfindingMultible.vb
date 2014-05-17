@@ -12,7 +12,7 @@ Public Class PathfindingMultible
     ''' <summary>
     ''' Compute path after each new block recursivly in every useful direction
     ''' </summary>
-    Private Sub ComputePath(ByRef lstPathPoints As List(Of List(Of PathPoint)), lstCurPathPoints As List(Of PathPoint), Optional maxRotations As Integer = 0)
+    Private Sub ComputePath(ByRef lstPathPoints As List(Of List(Of PathPoint)), lstCurPathPoints As List(Of PathPoint), maxRotations As Integer)
         Dim lstPossiblePathPoints As List(Of PathPoint) = New List(Of PathPoint)
 
         If lstCurPathPoints.Count = 0 Then
@@ -28,7 +28,7 @@ Public Class PathfindingMultible
         ' find path by moving backwards (from end to start)
         While (curPathPoint.Point.X <> StartPoint.X Or curPathPoint.Point.Y <> StartPoint.Y)
             ' remember current value
-            curPathPoint.EstimationValue = lstGridItem(GridView.GetIndex(curPathPoint.Point.X, curPathPoint.Point.Y, ColumnCount)).value
+            curPathPoint.StepValue = lstGridItem(GridView.GetIndex(curPathPoint.Point.X, curPathPoint.Point.Y, ColumnCount)).GridValue
             Dim minValue As Single = GetGridValue(curPathPoint.Point)
 
             SaveBestPoint(curPathPoint, Direction.Left, minValue, lstPossiblePathPoints)
@@ -63,6 +63,8 @@ Public Class PathfindingMultible
                         End If
                     End If
 
+                    'Debug.Print("CurRot: " + curRotations.ToString)
+
                     ComputePath(lstPathPoints, lstNewPathPoints, maxRotations)
                     Application.DoEvents()
                 Next
@@ -75,6 +77,8 @@ Public Class PathfindingMultible
         End While
 
         If lstCurPathPoints.Count > 0 Then
+            lstCurPathPoints.Reverse()
+
             lstPathPoints.Add(lstCurPathPoints)
         End If
     End Sub
@@ -121,11 +125,13 @@ Public Class PathfindingMultible
             .StopPoint = StopPoint
             .Init(ColumnCount, RowCount, lstGridItem)
             .AvoidRotations = True
+            .DriveDiagonal = DriveDiagonal
             .FindPath(lstPathPoints)
         End With
 
         If lstPathPoints.Count = 1 Then
             If lstPathPoints.Item(0).Count = 0 Then
+                bRunning = False
                 Return PathMessageType.PathBlocked
             End If
         End If

@@ -151,17 +151,18 @@ Public MustInherit Class Pathfinding
 
         Dim nextItem As GridItem = lstGridItem.Item(GridView.GetIndex(neighborPoint.X, neighborPoint.Y, myColumnCount))
 
-        If nextItem.value < 0.0 And nextItem.GetItemType() <> GridItemType.WallItem Then
+        If nextItem.GridValue < 0.0 And nextItem.GetItemType() <> GridItemType.WallItem Then
             If newDirection = Direction.Left Or newDirection = Direction.Top Or newDirection = Direction.Right Or newDirection = Direction.Bottom Then
                 ' horizinal & vertical
-                nextItem.value_rel = 1
+                nextItem.StepValue = 1
             Else
                 ' diagonal blocks
                 Dim factor As Integer = 1
-                nextItem.value_rel = Math.Sqrt(factor * factor + factor * factor)
+                Dim quadFactor = factor * factor
+                nextItem.StepValue = Math.Sqrt(quadFactor + quadFactor)
             End If
 
-            nextItem.value = curItem.value + nextItem.value_rel
+            nextItem.GridValue = curItem.GridValue + nextItem.StepValue
 
             lstBlocksWithNewValues.Add(neighborPoint)
 
@@ -206,7 +207,7 @@ Public MustInherit Class Pathfinding
             Dim myItem As GridItem = lstGridItem(GridView.GetIndex(curPoint, ColumnCount))
 
             ' start with startItem, then check every neighbor that got a value
-            If myItem.value >= 0.0 Then
+            If myItem.GridValue >= 0.0 Then
                 Dim bAnyUpdated As Boolean = False
 
                 For Each myDirection As Direction In lstDirectionsBase
@@ -253,7 +254,7 @@ Public MustInherit Class Pathfinding
         End Select
 
         ' better value found?
-        If newValue <= curPathPoint.EstimationValue And newValue <= minValue Then
+        If newValue <= curPathPoint.StepValue And newValue <= minValue Then
             ' mark old bad values as deleteable
             For Each myPoint As PathPoint In lstPossiblePoints
                 If GetGridValue(myPoint.Point) > newValue Then
@@ -271,8 +272,13 @@ Public MustInherit Class Pathfinding
             ' store the good values
             Dim myPathPoint As New PathPoint
             myPathPoint.Point = GetNeighborPoint(curPathPoint.Point, newDirection)
-            myPathPoint.EstimationValue = newValue
+            myPathPoint.StepValue = newValue
+            myPathPoint.EstimationValue = myPathPoint.StepValue
             myPathPoint.Direction = newDirection
+
+            If curPathPoint.Direction <> newDirection Then
+                myPathPoint.EstimationValue += myPathPoint.EstimationValue
+            End If
 
             lstPossiblePoints.Add(myPathPoint)
         End If
@@ -295,13 +301,13 @@ Public MustInherit Class Pathfinding
     Protected Function GetGridValue(x As Integer, y As Integer) As Single
         ' coordinates are in the grid?
         If x >= 0 And y >= 0 And x < ColumnCount And y < RowCount Then
-            Dim value As Single = lstGridItem(GridView.GetIndex(x, y, ColumnCount)).value()
+            Dim value As Single = lstGridItem(GridView.GetIndex(x, y, ColumnCount)).GridValue
 
             If value >= 0.0 Then Return value
         End If
 
         ' return high value, if it doesn't exists, so it won't be chosen as a good path
-        Return lstGridItem(GridView.GetIndex(StopPoint.X, StopPoint.Y, ColumnCount)).value + 1
+        Return lstGridItem(GridView.GetIndex(StopPoint.X, StopPoint.Y, ColumnCount)).GridValue + 1
     End Function
 
     Protected Sub RaiseGridItemValueChangedEvent()

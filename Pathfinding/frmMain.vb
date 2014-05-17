@@ -122,18 +122,39 @@ Public Class frmMain
         If lstPaths.Count = 1 Then
             Dim estimationSum As Single = 0.0
 
-            For Each myPathPoints As List(Of PathPoint) In lstPaths
-                For Each myPathPoint As PathPoint In myPathPoints
-                    estimationSum += myPathPoint.EstimationValue
-                Next
+            For Each myPathPoint As PathPoint In lstPaths.Item(0)
+                estimationSum += myPathPoint.EstimationValue
             Next
 
             estimationSum = Math.Round(estimationSum, 2)
 
             statusMsg = "estimation: " + estimationSum.ToString
         Else
-
             statusMsg = "[Paths found: " + lstPaths.Count.ToString + "]"
+
+            Dim curBestEstimation As Single = 0.0
+            Dim lstBestPaths As New List(Of List(Of PathPoint))
+
+            For Each myPathPoints As List(Of PathPoint) In lstPaths
+                Dim curEstimation As Single = 0.0
+
+                For Each myPathPoint As PathPoint In myPathPoints
+                    curEstimation += myPathPoint.EstimationValue
+                Next
+
+                If curEstimation < curBestEstimation Or curBestEstimation <= 0.0 Then
+                    curBestEstimation = curEstimation
+                    lstBestPaths.Clear()
+                    lstBestPaths.Add(myPathPoints)
+                ElseIf curEstimation = curBestEstimation Then
+                    lstBestPaths.Add(myPathPoints)
+                End If
+            Next
+
+            statusMsg += " [Best estimation: " + curBestEstimation.ToString
+            statusMsg += " - Path(s): " + lstBestPaths.Count.ToString + "]"
+
+            lstPaths = lstBestPaths
         End If
 
         statusMsg += " Time(sec): " + diffTime.Seconds.ToString + "." + diffTime.Milliseconds.ToString.PadLeft(3, "0")
@@ -168,14 +189,15 @@ Public Class frmMain
             For Each myPathPoints As List(Of PathPoint) In lstPaths
                 For Each myPathPoint As PathPoint In myPathPoints
                     If Not lastPoint Is Nothing Then
-                        gv.SetTypePosition(GridItemType.DefaultItem, lastPoint.Point.X * gv.GridSize, lastPoint.Point.Y * gv.GridSize)
+                        gv.SetTypePosition(GridItemType.DefaultItem, lastPoint.Point.X, lastPoint.Point.Y)
                     End If
 
-                    gv.SetTypePosition(GridItemType.StartItem, myPathPoint.Point.X * gv.GridSize, myPathPoint.Point.Y * gv.GridSize)
+                    gv.SetTypePosition(GridItemType.StartItem, myPathPoint.Point.X, myPathPoint.Point.Y)
                     lastPoint = myPathPoint
 
+                    gv.Refresh()
                     Application.DoEvents()
-                    Threading.Thread.Sleep(100)
+                    Threading.Thread.Sleep(200)
                 Next
             Next
         End If

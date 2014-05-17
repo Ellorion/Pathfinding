@@ -14,8 +14,8 @@ Public Class GridItem
     Dim brushWall As Brush
 
     Dim type As GridItemType
-    Dim curValue As Single
-    Dim relValue As Single
+    Dim myGridValue As Single
+    Dim myStepValue As Single
     Dim bDebugMode As Boolean
 
     Public Enum GridItemType
@@ -48,26 +48,26 @@ Public Class GridItem
     ''' <summary>
     '''  absolute value of a point (used for pathfinding)
     ''' </summary>
-    Property value As Single
+    Property GridValue As Single
         Get
-            Return curValue
+            Return myGridValue
         End Get
 
         Set(value As Single)
-            curValue = value
+            myGridValue = value
         End Set
     End Property
 
     ''' <summary>
     ''' relative value of a point (used for estimation)
     ''' </summary>
-    Property value_rel As Single
+    Property StepValue As Single
         Get
-            Return relValue
+            Return myStepValue
         End Get
 
         Set(value As Single)
-            relValue = value
+            myStepValue = value
         End Set
     End Property
 
@@ -107,13 +107,13 @@ Public Class GridItem
 
         Select Case type
             Case GridItemType.DefaultItem
-                curValue = -1.0
+                myGridValue = -1.0
             Case GridItemType.StartItem
-                curValue = 0.0
+                myGridValue = 0.0
             Case GridItemType.StopItem
-                curValue = -2.0
+                myGridValue = -2.0
             Case GridItemType.WallItem
-                curValue = -3.0
+                myGridValue = -3.0
         End Select
 
         ' "mark" for update at next drawing request
@@ -153,8 +153,8 @@ Public Class GridItem
                 End If
             Next
 
-            If (curValue > 0.0 And DebugMode = False) Or DebugMode = True Then
-                g.DrawString(Math.Round(curValue, 2).ToString, myFont, Brushes.Black, 2, 2)
+            If (myGridValue > 0.0 And DebugMode = False) Or DebugMode = True Then
+                g.DrawString(Math.Round(myGridValue, 2).ToString, myFont, Brushes.Black, 2, 2)
             End If
         End Using
 

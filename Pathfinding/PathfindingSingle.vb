@@ -13,7 +13,7 @@ Public Class PathfindingSingle
         If lstPathPoints Is Nothing Then
             lstPathPoints = New List(Of List(Of PathPoint))
         Else
-                    lstPathPoints.Clear()
+            lstPathPoints.Clear()
         End If
 
         If isRunning Then
@@ -53,7 +53,7 @@ Public Class PathfindingSingle
         ' find path by moving backwards (from end to start)
         While (curPathPoint.Point.X <> StartPoint.X Or curPathPoint.Point.Y <> StartPoint.Y)
             ' remember current value
-            curPathPoint.EstimationValue = lstGridItem(GridView.GetIndex(curPathPoint.Point.X, curPathPoint.Point.Y, ColumnCount)).value
+            curPathPoint.StepValue = lstGridItem(GridView.GetIndex(curPathPoint.Point.X, curPathPoint.Point.Y, ColumnCount)).GridValue
             Dim minValue As Single = GetGridValue(curPathPoint.Point)
 
             SaveBestPoint(curPathPoint, Direction.Left, minValue, lstPossiblePoints)
