@@ -37,6 +37,10 @@ Public Class frmMain
             pf = New PathfindingSingle
         End If
 
+        pf.UseAnimation = ckbAnimation.Checked
+        pf.DebugMode = ckbDebugMode.Checked
+        pf.AvoidRotations = ckbAvoidRotation.Checked
+
         If gv Is Nothing Then
             gv = New GridView(pf)
         Else
