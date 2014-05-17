@@ -7,14 +7,14 @@ Public Class PathfindingSingle
     Inherits Pathfinding
 
     Public Overrides Function FindPath(ByRef lstPathPoints As List(Of List(Of PathPoint))) As PathMessageType
-        Dim lstPathPointsTemp As New List(Of PathPoint)
+        Dim lstSinglePathPoints As New List(Of PathPoint)
         Dim returnValue As PathMessageType = PathMessageType.Running
 
         If lstPathPoints Is Nothing Then
             lstPathPoints = New List(Of List(Of PathPoint))
+        Else
+                    lstPathPoints.Clear()
         End If
-
-        lstPathPoints.Clear()
 
         If isRunning Then
             Return returnValue
@@ -22,13 +22,13 @@ Public Class PathfindingSingle
 
         ' no start position set
         If StartPoint.X < 0 Or StartPoint.Y < 0 Then
-            lstPathPoints.Add(lstPathPointsTemp)
+            lstPathPoints.Add(lstSinglePathPoints)
             Return PathMessageType.PathError
         End If
 
         ' no stop position set
         If StopPoint.X < 0 Or StopPoint.Y < 0 Then
-            lstPathPoints.Add(lstPathPointsTemp)
+            lstPathPoints.Add(lstSinglePathPoints)
             Return PathMessageType.PathError
         End If
 
@@ -39,14 +39,14 @@ Public Class PathfindingSingle
 
         Dim curPathPoint As New PathPoint
         curPathPoint.Point = New Point(StopPoint.X, StopPoint.Y)
-        ' generate random Direction for stoppoint
+        ' generate fixed direction for stop-point
         curPathPoint.Direction = Direction.Left
 
         Dim lstPossiblePoints As New List(Of PathPoint)
 
         Dim stopPathPoint As New PathPoint
         stopPathPoint.Point = StopPoint
-        lstPathPointsTemp.Add(stopPathPoint)
+        lstSinglePathPoints.Add(stopPathPoint)
 
         returnValue = PathMessageType.PathFound
 
@@ -91,7 +91,7 @@ Public Class PathfindingSingle
 
                 lstPossiblePoints.Clear()
 
-                lstPathPointsTemp.Add(curPathPoint)
+                lstSinglePathPoints.Add(curPathPoint)
 
                 ' stop before start point is changed or it would turn into a pathpoint
                 If curPathPoint.Point.X = StartPoint.X And curPathPoint.Point.Y = StartPoint.Y Then
@@ -99,23 +99,18 @@ Public Class PathfindingSingle
                 End If
 
                 lstGridItem.Item(GridView.GetIndex(curPathPoint.Point.X, curPathPoint.Point.Y, ColumnCount)).SetItemType(GridItemType.PathItem)
-
-                If UseAnimation Then
-                    RaiseGridItemValueChangedEvent()
-                    Application.DoEvents()
-                End If
             Else
-                lstPathPointsTemp.Clear()
+                lstSinglePathPoints.Clear()
+
+                ResetValues()
 
                 If DriveDiagonal Then
-                    ResetValues()
                     bRunning = False
                     DriveDiagonal = False
                     lstPathPoints.Clear()
                     returnValue = FindPath(lstPathPoints)
                     DriveDiagonal = True
                 Else
-                    ResetValues()
                     returnValue = PathMessageType.PathBlocked
                 End If
 
@@ -123,18 +118,9 @@ Public Class PathfindingSingle
             End If
         End While
 
-        If Not UseAnimation Then
-            RaiseGridItemValueChangedEvent()
-            Application.DoEvents()
-        End If
+        lstSinglePathPoints.Reverse()
 
-        If Not lstPathPoints Is Nothing Then
-            If lstPathPoints.Count > 1 Then lstPathPoints.Clear()
-        End If
-
-        lstPathPointsTemp.Reverse()
-
-        lstPathPoints.Add(lstPathPointsTemp)
+        lstPathPoints.Add(lstSinglePathPoints)
         bRunning = False
 
         Return returnValue

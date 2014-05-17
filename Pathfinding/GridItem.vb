@@ -4,7 +4,7 @@
 ''' <remarks></remarks>
 
 Public Class GridItem
-    Dim gridItem As Bitmap = Nothing
+    Dim bmpGridItem As Bitmap = Nothing
     Dim gridSize As Integer
 
     Dim penStart As Pen = Pens.Green
@@ -55,8 +55,6 @@ Public Class GridItem
 
         Set(value As Single)
             curValue = value
-
-            DrawGridItem()
         End Set
     End Property
 
@@ -83,11 +81,11 @@ Public Class GridItem
     End Sub
 
     Public Function GetItem() As Bitmap
-        If gridItem Is Nothing Then
+        If bmpGridItem Is Nothing Then
             DrawGridItem()
         End If
 
-        Return gridItem
+        Return bmpGridItem
     End Function
 
     Public Sub SetItemType(newType As GridItemType)
@@ -118,7 +116,8 @@ Public Class GridItem
                 curValue = -3.0
         End Select
 
-        DrawGridItem()
+        ' "mark" for update at next drawing request
+        bmpGridItem = Nothing
     End Sub
 
     Public Function GetItemType() As GridItemType
@@ -159,7 +158,7 @@ Public Class GridItem
             End If
         End Using
 
-        gridItem = tmpGridItem
+        bmpGridItem = tmpGridItem
 
         Return tmpGridItem
     End Function

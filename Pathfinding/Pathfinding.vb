@@ -60,7 +60,6 @@ Public MustInherit Class Pathfinding
     End Enum
 
     Public Property DriveDiagonal As Boolean = False Implements IPathfinding.DriveDiagonal
-    Public Property UseAnimation As Boolean = False Implements IPathfinding.UseAnimation
     Public Property AvoidRotations As Boolean = False Implements IPathfinding.AvoidRotations
 
     Public ReadOnly Property isRunning As Boolean Implements IPathfinding.isRunning
@@ -226,15 +225,9 @@ Public MustInherit Class Pathfinding
                     If SetValueOfSurroundingBlock(myItem, curPoint, Direction.BottomRight, lstBlocksWithNewValue) = GridValueReturnType.ValueUpdated Then lstUpdatedDirection.Add(Direction.BottomRight)
                 End If
 
-                If lstUpdatedDirection.Count > 0 Then
-                    If UseAnimation Then
-                        ' update the gui
-                        RaiseEvent GridItemValueChanged()
-                        Application.DoEvents()
-                    End If
-
-                    lstUpdatedDirection.Clear()
-                End If
+                'If lstUpdatedDirection.Count > 0 Then
+                lstUpdatedDirection.Clear()
+                'End If
             End If
         End While
     End Sub

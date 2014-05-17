@@ -167,6 +167,10 @@ Public Class GridView
         Return tmpGrid
     End Function
 
+    Public Sub Refresh()
+        RaiseEvent GridChanged(GetGrid())
+    End Sub
+
     Public Shared Function GetIndex(newPoint As Point, ColumnCount As Integer) As Integer
         Return GetIndex(newPoint.X, newPoint.Y, columnCount)
     End Function

@@ -33,7 +33,6 @@ Partial Class frmMain
         Me.ckbAvoidRotation = New System.Windows.Forms.CheckBox()
         Me.ckbDriveEnabled = New System.Windows.Forms.CheckBox()
         Me.cboPFStategies = New System.Windows.Forms.ComboBox()
-        Me.ckbAnimation = New System.Windows.Forms.CheckBox()
         Me.grpOptions = New System.Windows.Forms.GroupBox()
         Me.ckbDebugMode = New System.Windows.Forms.CheckBox()
         Me.btnClearMap = New System.Windows.Forms.Button()
@@ -115,7 +114,7 @@ Partial Class frmMain
         Me.btnStartPathfinding.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnStartPathfinding.Location = New System.Drawing.Point(305, 19)
         Me.btnStartPathfinding.Name = "btnStartPathfinding"
-        Me.btnStartPathfinding.Size = New System.Drawing.Size(75, 23)
+        Me.btnStartPathfinding.Size = New System.Drawing.Size(75, 46)
         Me.btnStartPathfinding.TabIndex = 1
         Me.btnStartPathfinding.Text = "&Start"
         Me.btnStartPathfinding.UseVisualStyleBackColor = True
@@ -129,7 +128,6 @@ Partial Class frmMain
         Me.grpPathfinding.Controls.Add(Me.ckbDriveEnabled)
         Me.grpPathfinding.Controls.Add(Me.cboPFStategies)
         Me.grpPathfinding.Controls.Add(Me.btnStartPathfinding)
-        Me.grpPathfinding.Controls.Add(Me.ckbAnimation)
         Me.grpPathfinding.Location = New System.Drawing.Point(270, 12)
         Me.grpPathfinding.Name = "grpPathfinding"
         Me.grpPathfinding.Size = New System.Drawing.Size(386, 71)
@@ -142,7 +140,7 @@ Partial Class frmMain
         Me.ckbMultiblePaths.AutoSize = True
         Me.ckbMultiblePaths.Checked = True
         Me.ckbMultiblePaths.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.ckbMultiblePaths.Location = New System.Drawing.Point(285, 48)
+        Me.ckbMultiblePaths.Location = New System.Drawing.Point(207, 48)
         Me.ckbMultiblePaths.Name = "ckbMultiblePaths"
         Me.ckbMultiblePaths.Size = New System.Drawing.Size(92, 17)
         Me.ckbMultiblePaths.TabIndex = 7
@@ -153,7 +151,7 @@ Partial Class frmMain
         'ckbAvoidRotation
         '
         Me.ckbAvoidRotation.AutoSize = True
-        Me.ckbAvoidRotation.Location = New System.Drawing.Point(178, 48)
+        Me.ckbAvoidRotation.Location = New System.Drawing.Point(100, 48)
         Me.ckbAvoidRotation.Name = "ckbAvoidRotation"
         Me.ckbAvoidRotation.Size = New System.Drawing.Size(101, 17)
         Me.ckbAvoidRotation.TabIndex = 6
@@ -181,17 +179,6 @@ Partial Class frmMain
         Me.cboPFStategies.Name = "cboPFStategies"
         Me.cboPFStategies.Size = New System.Drawing.Size(293, 21)
         Me.cboPFStategies.TabIndex = 0
-        '
-        'ckbAnimation
-        '
-        Me.ckbAnimation.AutoSize = True
-        Me.ckbAnimation.Location = New System.Drawing.Point(100, 48)
-        Me.ckbAnimation.Name = "ckbAnimation"
-        Me.ckbAnimation.Size = New System.Drawing.Size(72, 17)
-        Me.ckbAnimation.TabIndex = 0
-        Me.ckbAnimation.Text = "&Animation"
-        Me.ckbAnimation.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        Me.ckbAnimation.UseVisualStyleBackColor = True
         '
         'grpOptions
         '
@@ -344,7 +331,6 @@ Partial Class frmMain
     Friend WithEvents grpPathfinding As System.Windows.Forms.GroupBox
     Friend WithEvents cboPFStategies As System.Windows.Forms.ComboBox
     Friend WithEvents grpOptions As System.Windows.Forms.GroupBox
-    Friend WithEvents ckbAnimation As System.Windows.Forms.CheckBox
     Friend WithEvents nudRowCount As System.Windows.Forms.NumericUpDown
     Friend WithEvents lblRows As System.Windows.Forms.Label
     Friend WithEvents nudColumnCount As System.Windows.Forms.NumericUpDown

@@ -37,7 +37,6 @@ Public Class frmMain
             pf = New PathfindingSingle
         End If
 
-        pf.UseAnimation = ckbAnimation.Checked
         pf.DebugMode = ckbDebugMode.Checked
         pf.AvoidRotations = ckbAvoidRotation.Checked
 
@@ -59,7 +58,6 @@ Public Class frmMain
         btnStopPos.Image = CreateIcon(Brushes.Red)
         btnWall.Image = CreateIcon(Brushes.Black)
 
-        pf.UseAnimation = ckbAnimation.Checked
         pf.DebugMode = ckbDebugMode.Checked
         pf.AvoidRotations = ckbAvoidRotation.Checked
 
@@ -97,6 +95,9 @@ Public Class frmMain
         If pf.isRunning Or isDriving Then
             Exit Sub
         End If
+
+        tsStatus.Text = statusPrefix + "finding path(s)..."
+        Application.DoEvents()
 
         Dim startTime As Date = Now()
         Dim pfmsg As PathMessageType = pf.FindPath(lstPaths)
@@ -138,6 +139,8 @@ Public Class frmMain
         statusMsg += " Time(sec): " + diffTime.Seconds.ToString + "." + diffTime.Milliseconds.ToString.PadLeft(3, "0")
 
         tsStatus.Text = statusPrefix + statusMsg
+
+        gv.Refresh()
 
         If lstPaths.Count = 1 Then
             If ckbDriveEnabled.Checked Then
@@ -201,10 +204,6 @@ Public Class frmMain
         End If
 
         pbImage.Image = grid
-    End Sub
-
-    Private Sub ckbAnimation_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles ckbAnimation.CheckedChanged
-        pf.UseAnimation = ckbAnimation.Checked
     End Sub
 
     Private Sub nudColumnCount_ValueChanged(sender As System.Object, e As System.EventArgs) Handles nudColumnCount.ValueChanged

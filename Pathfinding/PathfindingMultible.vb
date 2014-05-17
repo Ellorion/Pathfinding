@@ -132,8 +132,6 @@ Public Class PathfindingMultible
 
         Dim maxRotations As Integer = CountRotations(lstPathPoints)
 
-        'Debug.Print("Max Rotations: " + maxRotations.ToString)
-
         ' compute paths for given amount of max. rotations
         ComputePath(lstPathPointsTemp, lstPossiblePoints, maxRotations + 1)
 

@@ -1,7 +1,6 @@
 ﻿Public Interface IPathfinding
     ' Properties
     Property DriveDiagonal As Boolean
-    Property UseAnimation As Boolean
     Property AvoidRotations As Boolean
 
     ReadOnly Property isRunning As Boolean
