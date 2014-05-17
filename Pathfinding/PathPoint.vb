@@ -1,4 +1,4 @@
-﻿Imports Pathfinding.Pathfinding
+﻿Imports Pathfinding.PathfindingSingle
 
 Public Class PathPoint
     Public Property Point As Point = New Point(0, 0)
@@ -7,5 +7,5 @@ Public Class PathPoint
     ''' <summary>
     ''' (used to prevent rotations while selecting a path)
     ''' </summary>
-    Public Property Direction As Direction
+    Public Property Direction As Pathfinding.Direction
 End Class

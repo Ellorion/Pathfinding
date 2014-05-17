@@ -12,10 +12,10 @@ Public Class GridView
 
     Public Event GridChanged(grid As Bitmap)
 
-    Private WithEvents myPathfinding As Pathfinding = Nothing
+    Private WithEvents myPathfinding As IPathfinding = Nothing
 
-    Sub New(ByRef pf As Pathfinding)
-        myPathfinding = pf
+    Sub New(ByRef pf As IPathfinding)
+        SwitchPathfinding(pf)
     End Sub
 
     Private ReadOnly Property ColumnCount As Integer
@@ -177,5 +177,13 @@ Public Class GridView
 
     Private Sub myPathfinding_GridItemValueChanged() Handles myPathfinding.GridItemValueChanged
         RaiseEvent GridChanged(GetGrid())
+    End Sub
+
+    Public Sub SwitchPathfinding(pf As IPathfinding)
+        myPathfinding = pf
+
+        myPathfinding.StartPoint = startPoint
+        myPathfinding.StopPoint = stopPoint
+        myPathfinding.Init(ColumnCount, RowCount, lstGridItem)
     End Sub
 End Class

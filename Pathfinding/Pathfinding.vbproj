@@ -98,6 +98,7 @@
     </Compile>
     <Compile Include="GridItem.vb" />
     <Compile Include="GridView.vb" />
+    <Compile Include="IPathfinding.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -114,6 +115,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Pathfinding.vb" />
+    <Compile Include="PathfindingSingle.vb" />
+    <Compile Include="PathfindingMultible.vb" />
     <Compile Include="PathPoint.vb" />
     <Compile Include="RandomGen.vb" />
   </ItemGroup>

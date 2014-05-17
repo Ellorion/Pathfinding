@@ -29,6 +29,7 @@ Partial Class frmMain
         Me.btnStartPos = New System.Windows.Forms.Button()
         Me.btnStartPathfinding = New System.Windows.Forms.Button()
         Me.grpPathfinding = New System.Windows.Forms.GroupBox()
+        Me.ckbMultiblePaths = New System.Windows.Forms.CheckBox()
         Me.ckbAvoidRotation = New System.Windows.Forms.CheckBox()
         Me.ckbDriveEnabled = New System.Windows.Forms.CheckBox()
         Me.cboPFStategies = New System.Windows.Forms.ComboBox()
@@ -61,7 +62,7 @@ Partial Class frmMain
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.pbImage.Location = New System.Drawing.Point(12, 92)
         Me.pbImage.Name = "pbImage"
-        Me.pbImage.Size = New System.Drawing.Size(544, 322)
+        Me.pbImage.Size = New System.Drawing.Size(644, 322)
         Me.pbImage.TabIndex = 0
         Me.pbImage.TabStop = False
         '
@@ -112,7 +113,7 @@ Partial Class frmMain
         'btnStartPathfinding
         '
         Me.btnStartPathfinding.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnStartPathfinding.Location = New System.Drawing.Point(205, 19)
+        Me.btnStartPathfinding.Location = New System.Drawing.Point(305, 19)
         Me.btnStartPathfinding.Name = "btnStartPathfinding"
         Me.btnStartPathfinding.Size = New System.Drawing.Size(75, 23)
         Me.btnStartPathfinding.TabIndex = 1
@@ -123,6 +124,7 @@ Partial Class frmMain
         '
         Me.grpPathfinding.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.grpPathfinding.Controls.Add(Me.ckbMultiblePaths)
         Me.grpPathfinding.Controls.Add(Me.ckbAvoidRotation)
         Me.grpPathfinding.Controls.Add(Me.ckbDriveEnabled)
         Me.grpPathfinding.Controls.Add(Me.cboPFStategies)
@@ -130,10 +132,21 @@ Partial Class frmMain
         Me.grpPathfinding.Controls.Add(Me.ckbAnimation)
         Me.grpPathfinding.Location = New System.Drawing.Point(270, 12)
         Me.grpPathfinding.Name = "grpPathfinding"
-        Me.grpPathfinding.Size = New System.Drawing.Size(286, 71)
+        Me.grpPathfinding.Size = New System.Drawing.Size(386, 71)
         Me.grpPathfinding.TabIndex = 1
         Me.grpPathfinding.TabStop = False
         Me.grpPathfinding.Text = "Pathfinding"
+        '
+        'ckbMultiblePaths
+        '
+        Me.ckbMultiblePaths.AutoSize = True
+        Me.ckbMultiblePaths.Location = New System.Drawing.Point(285, 48)
+        Me.ckbMultiblePaths.Name = "ckbMultiblePaths"
+        Me.ckbMultiblePaths.Size = New System.Drawing.Size(92, 17)
+        Me.ckbMultiblePaths.TabIndex = 7
+        Me.ckbMultiblePaths.Text = "&Multible Paths"
+        Me.ckbMultiblePaths.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.ckbMultiblePaths.UseVisualStyleBackColor = True
         '
         'ckbAvoidRotation
         '
@@ -164,7 +177,7 @@ Partial Class frmMain
         Me.cboPFStategies.FormattingEnabled = True
         Me.cboPFStategies.Location = New System.Drawing.Point(6, 21)
         Me.cboPFStategies.Name = "cboPFStategies"
-        Me.cboPFStategies.Size = New System.Drawing.Size(193, 21)
+        Me.cboPFStategies.Size = New System.Drawing.Size(293, 21)
         Me.cboPFStategies.TabIndex = 0
         '
         'ckbAnimation
@@ -191,7 +204,7 @@ Partial Class frmMain
         Me.grpOptions.Controls.Add(Me.lblColumns)
         Me.grpOptions.Location = New System.Drawing.Point(12, 420)
         Me.grpOptions.Name = "grpOptions"
-        Me.grpOptions.Size = New System.Drawing.Size(544, 45)
+        Me.grpOptions.Size = New System.Drawing.Size(644, 45)
         Me.grpOptions.TabIndex = 2
         Me.grpOptions.TabStop = False
         Me.grpOptions.Text = "Options"
@@ -210,7 +223,7 @@ Partial Class frmMain
         'btnClearMap
         '
         Me.btnClearMap.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnClearMap.Location = New System.Drawing.Point(444, 13)
+        Me.btnClearMap.Location = New System.Drawing.Point(544, 13)
         Me.btnClearMap.Name = "btnClearMap"
         Me.btnClearMap.Size = New System.Drawing.Size(94, 23)
         Me.btnClearMap.TabIndex = 5
@@ -219,7 +232,7 @@ Partial Class frmMain
         '
         'nudGridSize
         '
-        Me.nudGridSize.Location = New System.Drawing.Point(368, 16)
+        Me.nudGridSize.Location = New System.Drawing.Point(423, 16)
         Me.nudGridSize.Maximum = New Decimal(New Integer() {50, 0, 0, 0})
         Me.nudGridSize.Minimum = New Decimal(New Integer() {10, 0, 0, 0})
         Me.nudGridSize.Name = "nudGridSize"
@@ -230,7 +243,7 @@ Partial Class frmMain
         'lblGridSize
         '
         Me.lblGridSize.AutoSize = True
-        Me.lblGridSize.Location = New System.Drawing.Point(316, 20)
+        Me.lblGridSize.Location = New System.Drawing.Point(371, 20)
         Me.lblGridSize.Name = "lblGridSize"
         Me.lblGridSize.Size = New System.Drawing.Size(49, 13)
         Me.lblGridSize.TabIndex = 8
@@ -238,7 +251,7 @@ Partial Class frmMain
         '
         'nudRowCount
         '
-        Me.nudRowCount.Location = New System.Drawing.Point(266, 16)
+        Me.nudRowCount.Location = New System.Drawing.Point(321, 16)
         Me.nudRowCount.Maximum = New Decimal(New Integer() {85, 0, 0, 0})
         Me.nudRowCount.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.nudRowCount.Name = "nudRowCount"
@@ -249,7 +262,7 @@ Partial Class frmMain
         'lblRows
         '
         Me.lblRows.AutoSize = True
-        Me.lblRows.Location = New System.Drawing.Point(223, 20)
+        Me.lblRows.Location = New System.Drawing.Point(278, 20)
         Me.lblRows.Name = "lblRows"
         Me.lblRows.Size = New System.Drawing.Size(37, 13)
         Me.lblRows.TabIndex = 7
@@ -257,18 +270,18 @@ Partial Class frmMain
         '
         'nudColumnCount
         '
-        Me.nudColumnCount.Location = New System.Drawing.Point(173, 16)
+        Me.nudColumnCount.Location = New System.Drawing.Point(228, 16)
         Me.nudColumnCount.Maximum = New Decimal(New Integer() {180, 0, 0, 0})
         Me.nudColumnCount.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.nudColumnCount.Name = "nudColumnCount"
         Me.nudColumnCount.Size = New System.Drawing.Size(44, 20)
         Me.nudColumnCount.TabIndex = 2
-        Me.nudColumnCount.Value = New Decimal(New Integer() {17, 0, 0, 0})
+        Me.nudColumnCount.Value = New Decimal(New Integer() {20, 0, 0, 0})
         '
         'lblColumns
         '
         Me.lblColumns.AutoSize = True
-        Me.lblColumns.Location = New System.Drawing.Point(119, 20)
+        Me.lblColumns.Location = New System.Drawing.Point(174, 20)
         Me.lblColumns.Name = "lblColumns"
         Me.lblColumns.Size = New System.Drawing.Size(50, 13)
         Me.lblColumns.TabIndex = 6
@@ -279,7 +292,7 @@ Partial Class frmMain
         Me.StatusStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsStatus})
         Me.StatusStrip.Location = New System.Drawing.Point(0, 474)
         Me.StatusStrip.Name = "StatusStrip"
-        Me.StatusStrip.Size = New System.Drawing.Size(568, 22)
+        Me.StatusStrip.Size = New System.Drawing.Size(668, 22)
         Me.StatusStrip.TabIndex = 3
         Me.StatusStrip.Text = "StatusStrip1"
         '
@@ -293,7 +306,7 @@ Partial Class frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(568, 496)
+        Me.ClientSize = New System.Drawing.Size(668, 496)
         Me.Controls.Add(Me.StatusStrip)
         Me.Controls.Add(Me.grpOptions)
         Me.Controls.Add(Me.grpPathfinding)
@@ -342,5 +355,6 @@ Partial Class frmMain
     Friend WithEvents tsStatus As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents ckbDriveEnabled As System.Windows.Forms.CheckBox
     Friend WithEvents ckbAvoidRotation As System.Windows.Forms.CheckBox
+    Friend WithEvents ckbMultiblePaths As System.Windows.Forms.CheckBox
 
 End Class

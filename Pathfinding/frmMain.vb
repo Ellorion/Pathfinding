@@ -1,9 +1,9 @@
 ﻿Imports Pathfinding.GridItem
-Imports Pathfinding.Pathfinding
+Imports Pathfinding.PathfindingSingle
 
 Public Class frmMain
-    Dim pf As New Pathfinding
-    Dim WithEvents gw As New GridView(pf)
+    Dim pf As IPathfinding
+    Dim WithEvents gv As GridView = Nothing
 
     Dim posType As GridItemType = GridItemType.DefaultItem
 
@@ -12,7 +12,7 @@ Public Class frmMain
 
     Dim statusPrefix As String = "Status: "
 
-    Dim lstPathPoints As List(Of PathPoint) = Nothing
+    Dim lstPaths As List(Of List(Of PathPoint)) = Nothing
 
     Public ReadOnly Property isDriving As Boolean
         Get
@@ -30,7 +30,23 @@ Public Class frmMain
         End If
     End Sub
 
+    Private Sub ChangePathfinding(bMultible As Boolean)
+        If bMultible Then
+            pf = New PathfindingMultible
+        Else
+            pf = New PathfindingSingle
+        End If
+
+        If gv Is Nothing Then
+            gv = New GridView(pf)
+        Else
+            gv.SwitchPathfinding(pf)
+        End If
+    End Sub
+
     Private Sub frmMain_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
+        ChangePathfinding(ckbMultiblePaths.Checked)
+
         cboPFStategies.Items.Add("Horizonal / Vertical")
         cboPFStategies.Items.Add("Horizonal / Vertical / Diagonal")
         cboPFStategies.SelectedIndex = 0
@@ -43,16 +59,16 @@ Public Class frmMain
         pf.DebugMode = ckbDebugMode.Checked
         pf.AvoidRotations = ckbAvoidRotation.Checked
 
-        gw.CreateGrid(nudColumnCount.Value, nudRowCount.Value)
-        gw.GridSize = nudGridSize.Value
+        gv.CreateGrid(nudColumnCount.Value, nudRowCount.Value)
+        gv.GridSize = nudGridSize.Value
 
-        gw.SetTypePosition(GridItemType.StartItem, 2 * gw.GridSize, 1 * gw.GridSize)
-        gw.SetTypePosition(GridItemType.StopItem, 14 * gw.GridSize, 8 * gw.GridSize)
+        gv.SetTypePosition(GridItemType.StartItem, 2 * gv.GridSize, 1 * gv.GridSize)
+        gv.SetTypePosition(GridItemType.StopItem, 17 * gv.GridSize, 8 * gv.GridSize)
 
-        gw.SetTypePosition(GridItemType.WallItem, 8 * gw.GridSize, 2 * gw.GridSize)
-        gw.SetTypePosition(GridItemType.WallItem, 8 * gw.GridSize, 3 * gw.GridSize)
-        gw.SetTypePosition(GridItemType.WallItem, 8 * gw.GridSize, 4 * gw.GridSize)
-        gw.SetTypePosition(GridItemType.WallItem, 8 * gw.GridSize, 5 * gw.GridSize)
+        gv.SetTypePosition(GridItemType.WallItem, 9 * gv.GridSize, 2 * gv.GridSize)
+        gv.SetTypePosition(GridItemType.WallItem, 9 * gv.GridSize, 3 * gv.GridSize)
+        gv.SetTypePosition(GridItemType.WallItem, 9 * gv.GridSize, 4 * gv.GridSize)
+        gv.SetTypePosition(GridItemType.WallItem, 9 * gv.GridSize, 5 * gv.GridSize)
 
         Randomize()
 
@@ -63,7 +79,7 @@ Public Class frmMain
     End Sub
 
     Private Sub pbImage_MouseClick(sender As Object, e As System.Windows.Forms.MouseEventArgs) Handles pbImage.MouseClick
-        gw.SetTypePosition(posType, e.X, e.Y)
+        gv.SetTypePosition(posType, e.X, e.Y)
     End Sub
 
     Private Sub btnStartPos_Click(sender As System.Object, e As System.EventArgs) Handles btnStartPos.Click
@@ -84,7 +100,7 @@ Public Class frmMain
         End If
 
         Dim startTime As Date = Now()
-        Dim pfmsg As PathMessageType = pf.FindPath(lstPathPoints)
+        Dim pfmsg As PathMessageType = pf.FindPath(lstPaths)
         Dim endTime As Date = Now()
 
         Dim diffTime As TimeSpan = endTime.Subtract(startTime)
@@ -94,39 +110,49 @@ Public Class frmMain
         Select Case pfmsg
             Case PathMessageType.PathError
                 statusMsg = "Start or Stop-Position not set!"
-                'MsgBox(statusMsg, , "Error")
             Case PathMessageType.PathBlocked
                 statusMsg = "No available path cound be found"
-                'MsgBox(statusMsg, , "Info")
         End Select
 
-        If lstPathPoints.Count > 0 Then
+        If statusMsg.Length > 0 Then
+            tsStatus.Text = statusPrefix + statusMsg
+            Exit Sub
+        End If
+
+        If lstPaths.Count = 1 Then
             Dim estimationSum As Single = 0.0
 
-            For Each myPoint As PathPoint In lstPathPoints
-                estimationSum += myPoint.EstimationValue
+            For Each myPathPoints As List(Of PathPoint) In lstPaths
+                For Each myPathPoint As PathPoint In myPathPoints
+                    estimationSum += myPathPoint.EstimationValue
+                Next
             Next
 
             estimationSum = Math.Round(estimationSum, 2)
 
             statusMsg = "estimation: " + estimationSum.ToString
+        Else
 
-            statusMsg += " Time(sec): " + diffTime.Seconds.ToString + "." + diffTime.Milliseconds.ToString
+            statusMsg = "[Paths found: " + lstPaths.Count.ToString + "]"
         End If
+
+        statusMsg += " Time(sec): " + diffTime.Seconds.ToString + "." + diffTime.Milliseconds.ToString.PadLeft(3, "0")
 
         tsStatus.Text = statusPrefix + statusMsg
 
-        If ckbDriveEnabled.Checked Then
-            StartDriving()
+        If lstPaths.Count = 1 Then
+            If ckbDriveEnabled.Checked Then
+                StartDriving()
+            End If
         End If
     End Sub
 
     Public Sub StartDriving()
-        If bDriving Or lstPathPoints Is Nothing Then
+        If bDriving Or lstPaths Is Nothing Then
             Exit Sub
         End If
 
-        If lstPathPoints.Count = 0 Then Exit Sub
+        If lstPaths.Count = 0 Then Exit Sub
 
         bDriving = True
 
@@ -135,17 +161,22 @@ Public Class frmMain
         tsStatus.Text += " - Driving..."
 
         Dim lastPoint As PathPoint = Nothing
-        For Each myPoint As PathPoint In lstPathPoints
-            If Not lastPoint Is Nothing Then
-                gw.SetTypePosition(GridItemType.DefaultItem, lastPoint.Point.X * gw.GridSize, lastPoint.Point.Y * gw.GridSize)
-            End If
 
-            gw.SetTypePosition(GridItemType.StartItem, myPoint.Point.X * gw.GridSize, myPoint.Point.Y * gw.GridSize)
-            lastPoint = myPoint
+        If lstPaths.Count = 1 Then
+            For Each myPathPoints As List(Of PathPoint) In lstPaths
+                For Each myPathPoint As PathPoint In myPathPoints
+                    If Not lastPoint Is Nothing Then
+                        gv.SetTypePosition(GridItemType.DefaultItem, lastPoint.Point.X * gv.GridSize, lastPoint.Point.Y * gv.GridSize)
+                    End If
 
-            Application.DoEvents()
-            Threading.Thread.Sleep(100)
-        Next
+                    gv.SetTypePosition(GridItemType.StartItem, myPathPoint.Point.X * gv.GridSize, myPathPoint.Point.Y * gv.GridSize)
+                    lastPoint = myPathPoint
+
+                    Application.DoEvents()
+                    Threading.Thread.Sleep(100)
+                Next
+            Next
+        End If
 
         tsStatus.Text = tsStatusText + " - Driving: done"
 
@@ -165,7 +196,7 @@ Public Class frmMain
         Return tmpIcon
     End Function
 
-    Private Sub pf_GridChanged(grid As System.Drawing.Bitmap) Handles gw.GridChanged
+    Private Sub pf_GridChanged(grid As System.Drawing.Bitmap) Handles gv.GridChanged
         If Not pbImage.Image Is Nothing Then
             pbImage.Image.Dispose()
         End If
@@ -179,24 +210,24 @@ Public Class frmMain
 
     Private Sub nudColumnCount_ValueChanged(sender As System.Object, e As System.EventArgs) Handles nudColumnCount.ValueChanged
         If bStarted Then
-            gw.CreateGrid(nudColumnCount.Value, nudRowCount.Value)
+            gv.CreateGrid(nudColumnCount.Value, nudRowCount.Value)
         End If
     End Sub
 
     Private Sub nudRowCount_ValueChanged(sender As System.Object, e As System.EventArgs) Handles nudRowCount.ValueChanged
         If bStarted Then
-            gw.CreateGrid(nudColumnCount.Value, nudRowCount.Value)
+            gv.CreateGrid(nudColumnCount.Value, nudRowCount.Value)
         End If
     End Sub
 
     Private Sub nudGridSize_ValueChanged(sender As System.Object, e As System.EventArgs) Handles nudGridSize.ValueChanged
         If bStarted Then
-            gw.GridSize = nudGridSize.Value
+            gv.GridSize = nudGridSize.Value
         End If
     End Sub
 
     Private Sub btnClearMap_Click(sender As System.Object, e As System.EventArgs) Handles btnClearMap.Click
-        gw.CreateGrid(nudColumnCount.Value, nudRowCount.Value)
+        gv.CreateGrid(nudColumnCount.Value, nudRowCount.Value)
     End Sub
 
     Private Sub ckbDebugMode_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles ckbDebugMode.CheckedChanged
@@ -213,6 +244,10 @@ Public Class frmMain
         ElseIf cboPFStategies.SelectedIndex = 1 Then
             pf.DriveDiagonal = True
         End If
+    End Sub
+
+    Private Sub ckbMultiblePaths_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles ckbMultiblePaths.CheckedChanged
+        ChangePathfinding(ckbMultiblePaths.Checked)
     End Sub
 End Class
 
