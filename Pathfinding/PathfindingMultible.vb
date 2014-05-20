@@ -7,12 +7,13 @@
 Public Class PathfindingMultible
     Inherits Pathfinding
 
-    Private pfBase As New PathfindingSingle
+    Private pfSingle As New PathfindingSingle
+    Private lstPathPoints As New List(Of List(Of PathPoint))
 
     ''' <summary>
     ''' Compute path after each new block recursivly in every useful direction
     ''' </summary>
-    Private Sub ComputePath(ByRef lstPathPoints As List(Of List(Of PathPoint)), lstCurPathPoints As List(Of PathPoint), maxRotations As Integer)
+    Private Sub ComputePath(ByVal lstCurPathPoints As List(Of PathPoint), maxRotations As Integer)
         Dim lstPossiblePathPoints As List(Of PathPoint) = New List(Of PathPoint)
 
         If lstCurPathPoints.Count = 0 Then
@@ -29,7 +30,7 @@ Public Class PathfindingMultible
         While (curPathPoint.Point.X <> StartPoint.X Or curPathPoint.Point.Y <> StartPoint.Y)
             ' remember current value
             curPathPoint.StepValue = lstGridItem(GridView.GetIndex(curPathPoint.Point.X, curPathPoint.Point.Y, ColumnCount)).GridValue
-            Dim minValue As Single = GetGridValue(curPathPoint.Point)
+            Dim minValue As Single = curPathPoint.StepValue
 
             SaveBestPoint(curPathPoint, Direction.Left, minValue, lstPossiblePathPoints)
             SaveBestPoint(curPathPoint, Direction.Top, minValue, lstPossiblePathPoints)
@@ -47,63 +48,45 @@ Public Class PathfindingMultible
             ' choose one available block in the path
             If lstPossiblePathPoints.Count > 0 Then
                 For Each myPathPoint As PathPoint In lstPossiblePathPoints
-                    Dim lstNewPathPoints As List(Of PathPoint) = New List(Of PathPoint)
-                    lstNewPathPoints.AddRange(lstCurPathPoints)
-                    lstNewPathPoints.Add(myPathPoint)
+                    Dim lstNewPathPoints As New List(Of PathPoint)(lstCurPathPoints)
+                    lstNewPathPoints.add(myPathPoint)
 
-                    ' rotation limiter active?
-                    If maxRotations > 0 Then
-                        Dim curRotations As Integer = CountRotations(lstNewPathPoints)
+                    Dim curRotations As Integer = CountRotations(lstNewPathPoints)
 
-                        ' throw away paths, that use to many rotations
-                        If curRotations > maxRotations Then
-                            lstNewPathPoints.Clear()
-                            lstCurPathPoints.Clear()
-                            Exit Sub
-                        End If
+                    ' throw away paths, that use to many rotations
+                    If curRotations > maxRotations Then
+                        Exit Sub
                     End If
 
-                    'Debug.Print("CurRot: " + curRotations.ToString)
-
-                    ComputePath(lstPathPoints, lstNewPathPoints, maxRotations)
-                    Application.DoEvents()
+                    ComputePath(lstNewPathPoints, maxRotations)
                 Next
-
-                Exit Sub
-            Else
-                lstCurPathPoints.Clear()
-                Exit While
             End If
+
+            Exit Sub
         End While
 
         If lstCurPathPoints.Count > 0 Then
             lstCurPathPoints.Reverse()
-
             lstPathPoints.Add(lstCurPathPoints)
         End If
     End Sub
 
     Public Overrides Function FindPath(ByRef lstPathPoints As List(Of List(Of PathPoint))) As PathMessageType
-        Dim lstPathPointsTemp As New List(Of List(Of PathPoint))
         Dim returnValue As PathMessageType = PathMessageType.Running
-
-        If lstPathPoints Is Nothing Then
-            lstPathPoints = New List(Of List(Of PathPoint))
-        End If
 
         If isRunning Then
             Return returnValue
         End If
 
+        Me.lstPathPoints.Clear()
+        
         ' no start position set
         If StartPoint.X < 0 Or StartPoint.Y < 0 Then
-            lstPathPoints = lstPathPointsTemp
             Return PathMessageType.PathError
         End If
 
         ' no stop position set
         If StopPoint.X < 0 Or StopPoint.Y < 0 Then
-            lstPathPoints = lstPathPointsTemp
             Return PathMessageType.PathError
         End If
 
@@ -117,10 +100,7 @@ Public Class PathfindingMultible
         ' generate random Direction for stoppoint
         curPathPoint.Direction = Direction.Left
 
-        Dim lstPossiblePoints As List(Of PathPoint) = New List(Of PathPoint)
-        lstPossiblePoints.Add(curPathPoint)
-
-        With pfBase
+        With pfSingle
             .StartPoint = StartPoint
             .StopPoint = StopPoint
             .Init(ColumnCount, RowCount, lstGridItem)
@@ -138,10 +118,11 @@ Public Class PathfindingMultible
 
         Dim maxRotations As Integer = CountRotations(lstPathPoints)
 
-        ' compute paths for given amount of max. rotations
-        ComputePath(lstPathPointsTemp, lstPossiblePoints, maxRotations + 1)
+        Dim lstPossiblePoints As List(Of PathPoint) = New List(Of PathPoint)
+        lstPossiblePoints.Add(curPathPoint)
 
-        lstPathPoints = lstPathPointsTemp
+        ' compute paths for given amount of max. rotations
+        ComputePath(lstPossiblePoints, maxRotations + 1)
 
         bRunning = False
 
@@ -150,6 +131,8 @@ Public Class PathfindingMultible
         Else
             returnValue = PathMessageType.PathFound
         End If
+
+        lstPathPoints = Me.lstPathPoints
 
         Return returnValue
     End Function
