@@ -152,7 +152,8 @@ Public Class frmMain
             Next
 
             statusMsg += " [Best estimation: " + curBestEstimation.ToString
-            statusMsg += " - Path(s): " + lstBestPaths.Count.ToString + "]"
+            statusMsg += " - Path(s): " + lstBestPaths.Count.ToString
+            statusMsg += " Rotation(s): " + Pathfinding.CountRotations(lstBestPaths).ToString + "]"
 
             lstPaths = lstBestPaths
         End If

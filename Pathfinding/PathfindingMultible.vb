@@ -10,6 +10,8 @@ Public Class PathfindingMultible
     Private pfSingle As New PathfindingSingle
     Private lstPathPoints As New List(Of List(Of PathPoint))
 
+    Private iPathsFound As Integer = 0
+
     ''' <summary>
     ''' Compute path after each new block recursivly in every useful direction
     ''' </summary>
@@ -66,6 +68,8 @@ Public Class PathfindingMultible
         If lstCurPathPoints.Count > 0 Then
             lstCurPathPoints.Reverse()
             lstPathPoints.Add(lstCurPathPoints)
+            iPathsFound += 1
+            Debug.Print("Found: " + iPathsFound.ToString)
         End If
     End Sub
 
@@ -89,6 +93,8 @@ Public Class PathfindingMultible
         End If
 
         bRunning = True
+
+        iPathsFound = 0
 
         ' compute values for all possible blocks
         ComputeBlocksValues()
@@ -116,11 +122,21 @@ Public Class PathfindingMultible
 
         Dim maxRotations As Integer = CountRotations(lstPathPoints)
 
+        If maxRotations < 3 Then
+            maxRotations = 3
+        End If
+
         Dim lstPossiblePoints As New List(Of PathPoint)
         lstPossiblePoints.Add(curPathPoint)
 
         ' compute paths for given amount of max. rotations
-        ComputePath(lstPossiblePoints, maxRotations + 1)
+        For curRotationCount As Integer = 2 To maxRotations
+            ComputePath(lstPossiblePoints, curRotationCount)
+
+            If Me.lstPathPoints.Count > 0 Then
+                Exit For
+            End If
+        Next
 
         bRunning = False
 
