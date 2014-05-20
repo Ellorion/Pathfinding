@@ -37,6 +37,8 @@ Public Class PathfindingSingle
         ' compute values for all possible blocks
         ComputeBlocksValues()
 
+        'Return PathMessageType.Running
+
         Dim curPathPoint As New PathPoint
         curPathPoint.Point = New Point(StopPoint.X, StopPoint.Y)
         ' generate fixed direction for stop-point
@@ -54,7 +56,7 @@ Public Class PathfindingSingle
         While (curPathPoint.Point.X <> StartPoint.X Or curPathPoint.Point.Y <> StartPoint.Y)
             ' remember current value
             curPathPoint.StepValue = lstGridItem(GridView.GetIndex(curPathPoint.Point.X, curPathPoint.Point.Y, ColumnCount)).GridValue
-            Dim minValue As Single = GetGridValue(curPathPoint.Point)
+            Dim minValue As Single = curPathPoint.StepValue
 
             SaveBestPoint(curPathPoint, Direction.Left, minValue, lstPossiblePoints)
             SaveBestPoint(curPathPoint, Direction.Top, minValue, lstPossiblePoints)

@@ -14,8 +14,6 @@ Public Class PathfindingMultible
     ''' Compute path after each new block recursivly in every useful direction
     ''' </summary>
     Private Sub ComputePath(ByVal lstCurPathPoints As List(Of PathPoint), maxRotations As Integer)
-        Dim lstPossiblePathPoints As List(Of PathPoint) = New List(Of PathPoint)
-
         If lstCurPathPoints.Count = 0 Then
             Exit Sub
         End If
@@ -27,10 +25,12 @@ Public Class PathfindingMultible
         returnValue = PathMessageType.PathFound
 
         ' find path by moving backwards (from end to start)
-        While (curPathPoint.Point.X <> StartPoint.X Or curPathPoint.Point.Y <> StartPoint.Y)
+        If (curPathPoint.Point.X <> StartPoint.X Or curPathPoint.Point.Y <> StartPoint.Y) Then
             ' remember current value
-            curPathPoint.StepValue = lstGridItem(GridView.GetIndex(curPathPoint.Point.X, curPathPoint.Point.Y, ColumnCount)).GridValue
+            curPathPoint.StepValue = GetGridValue(curPathPoint.Point)
             Dim minValue As Single = curPathPoint.StepValue
+
+            Dim lstPossiblePathPoints As New List(Of PathPoint)
 
             SaveBestPoint(curPathPoint, Direction.Left, minValue, lstPossiblePathPoints)
             SaveBestPoint(curPathPoint, Direction.Top, minValue, lstPossiblePathPoints)
@@ -45,25 +45,23 @@ Public Class PathfindingMultible
                 SaveBestPoint(curPathPoint, Direction.BottomRight, minValue, lstPossiblePathPoints)
             End If
 
-            ' choose one available block in the path
-            If lstPossiblePathPoints.Count > 0 Then
-                For Each myPathPoint As PathPoint In lstPossiblePathPoints
-                    Dim lstNewPathPoints As New List(Of PathPoint)(lstCurPathPoints)
-                    lstNewPathPoints.add(myPathPoint)
+            ' check all available (useful) directions
+            For Each myPathPoint As PathPoint In lstPossiblePathPoints
+                Dim lstNewPathPoints As New List(Of PathPoint)(lstCurPathPoints)
+                lstNewPathPoints.Add(myPathPoint)
 
-                    Dim curRotations As Integer = CountRotations(lstNewPathPoints)
+                Dim curRotations As Integer = CountRotations(lstNewPathPoints)
 
-                    ' throw away paths, that use to many rotations
-                    If curRotations > maxRotations Then
-                        Exit Sub
-                    End If
+                ' throw away paths, that use to many rotations
+                If curRotations > maxRotations Then
+                    Exit Sub
+                End If
 
-                    ComputePath(lstNewPathPoints, maxRotations)
-                Next
-            End If
+                ComputePath(lstNewPathPoints, maxRotations)
+            Next
 
             Exit Sub
-        End While
+        End If
 
         If lstCurPathPoints.Count > 0 Then
             lstCurPathPoints.Reverse()

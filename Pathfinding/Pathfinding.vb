@@ -91,28 +91,26 @@ Public MustInherit Class Pathfinding
     Public MustOverride Function FindPath(ByRef lstPathPoints As List(Of List(Of PathPoint))) As PathMessageType Implements IPathfinding.FindPath
 
     Protected Function GetNeighborPoint(curPoint As Point, newDirection As Direction) As Point
-        Dim newPoint As Point = Nothing
-
         Select Case newDirection
             Case Direction.Left
-                newPoint = New Point(curPoint.X - 1, curPoint.Y)
+                curPoint = New Point(curPoint.X - 1, curPoint.Y)
             Case Direction.Top
-                newPoint = New Point(curPoint.X, curPoint.Y - 1)
+                curPoint = New Point(curPoint.X, curPoint.Y - 1)
             Case Direction.Right
-                newPoint = New Point(curPoint.X + 1, curPoint.Y)
+                curPoint = New Point(curPoint.X + 1, curPoint.Y)
             Case Direction.Bottom
-                newPoint = New Point(curPoint.X, curPoint.Y + 1)
+                curPoint = New Point(curPoint.X, curPoint.Y + 1)
             Case Direction.TopLeft
-                newPoint = New Point(curPoint.X - 1, curPoint.Y - 1)
+                curPoint = New Point(curPoint.X - 1, curPoint.Y - 1)
             Case Direction.TopRight
-                newPoint = New Point(curPoint.X + 1, curPoint.Y - 1)
+                curPoint = New Point(curPoint.X + 1, curPoint.Y - 1)
             Case Direction.BottomLeft
-                newPoint = New Point(curPoint.X - 1, curPoint.Y + 1)
+                curPoint = New Point(curPoint.X - 1, curPoint.Y + 1)
             Case Direction.BottomRight
-                newPoint = New Point(curPoint.X + 1, curPoint.Y + 1)
+                curPoint = New Point(curPoint.X + 1, curPoint.Y + 1)
         End Select
 
-        Return newPoint
+        Return curPoint
     End Function
 
     Protected Function inArea(newPoint As Point) As Boolean
@@ -133,8 +131,8 @@ Public MustInherit Class Pathfinding
             Return True
         End If
 
-        Dim leftItem As GridItem = lstGridItem.Item(index)
-        If leftItem.GetItemType() = GridItemType.WallItem Then
+        Dim neighborItem As GridItem = lstGridItem.Item(index)
+        If neighborItem.GetItemType() = GridItemType.WallItem Then
             Return True
         End If
 
