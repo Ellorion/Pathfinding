@@ -234,7 +234,9 @@ Public MustInherit Class Pathfinding
     End Sub
 
     Protected Function SaveBestPoint(curPathPoint As PathPoint, newDirection As Direction, ByRef minValue As Single, ByRef lstPossiblePoints As List(Of PathPoint)) As Boolean
-        Dim newValue As Single = GetGridValue(GetNeighborPoint(curPathPoint.Point, newDirection))
+        'Dim newValue As Single = GetGridValue(GetNeighborPoint(curPathPoint.Point, newDirection))
+        Dim neighborPoint As Point = GetNeighborPoint(curPathPoint.Point, newDirection)
+        Dim newValue As Single = GetGridValue(neighborPoint)
 
         ' if diag -> check other 2 sides, if at least one is a wall -> don't save it!
         Select Case newDirection
@@ -274,7 +276,7 @@ Public MustInherit Class Pathfinding
 
             ' store the good values
             Dim myPathPoint As New PathPoint
-            myPathPoint.Point = GetNeighborPoint(curPathPoint.Point, newDirection)
+            myPathPoint.Point = neighborPoint
             myPathPoint.StepValue = newValue
             myPathPoint.EstimationValue = myPathPoint.StepValue
             myPathPoint.Direction = newDirection
