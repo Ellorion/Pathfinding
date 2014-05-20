@@ -234,7 +234,6 @@ Public MustInherit Class Pathfinding
     End Sub
 
     Protected Function SaveBestPoint(curPathPoint As PathPoint, newDirection As Direction, ByRef minValue As Single, ByRef lstPossiblePoints As List(Of PathPoint)) As Boolean
-        Dim lstDeleteableValues As New List(Of PathPoint)
         Dim newValue As Single = GetGridValue(GetNeighborPoint(curPathPoint.Point, newDirection))
 
         ' if diag -> check other 2 sides, if at least one is a wall -> don't save it!
@@ -256,18 +255,22 @@ Public MustInherit Class Pathfinding
         ' better value found?
         If newValue <= curPathPoint.StepValue And newValue <= minValue Then
             ' mark old bad values as deleteable
-            For Each myPoint As PathPoint In lstPossiblePoints
-                If GetGridValue(myPoint.Point) > newValue Then
-                    lstDeleteableValues.Add(myPoint)
-                End If
-            Next
+            If DriveDiagonal Then
+                Dim lstDeleteableValues As New List(Of PathPoint)
 
-            ' and remove them
-            For Each myPoint As PathPoint In lstDeleteableValues
-                lstPossiblePoints.Remove(myPoint)
-            Next
+                For Each myPoint As PathPoint In lstPossiblePoints
+                    If GetGridValue(myPoint.Point) > newValue Then
+                        lstDeleteableValues.Add(myPoint)
+                    End If
+                Next
 
-            lstDeleteableValues.Clear()
+                ' and remove them
+                For Each myPoint As PathPoint In lstDeleteableValues
+                    lstPossiblePoints.Remove(myPoint)
+                Next
+
+                lstDeleteableValues.Clear()
+            End If
 
             ' store the good values
             Dim myPathPoint As New PathPoint
@@ -282,9 +285,9 @@ Public MustInherit Class Pathfinding
             End If
 
             lstPossiblePoints.Add(myPathPoint)
-        End If
 
-        minValue = Math.Min(newValue, minValue)
+            minValue = newValue
+        End If
 
         Return True
     End Function
