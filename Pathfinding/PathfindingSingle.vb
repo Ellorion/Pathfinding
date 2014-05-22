@@ -6,30 +6,47 @@
 Public Class PathfindingSingle
     Inherits Pathfinding
 
-    Public Overrides Function FindPath(ByRef lstPathPoints As List(Of List(Of PathPoint))) As PathMessageType
+    Private lstPathPoints As New List(Of List(Of PathPoint))
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(columnCount As Integer, rowCount As Integer, lstGridItem As List(Of GridItem))
+        Me.Init(columnCount, rowCount, lstGridItem)
+    End Sub
+
+    Public Overrides Function FindPath(newStartPoint As Point, newStopPoint As Point, ByRef lstPathPoints As List(Of List(Of PathPoint))) As PathMessageType
         Dim lstIntegerPathPoints As New List(Of PathPoint)
         Dim returnValue As PathMessageType = PathMessageType.Running
-
-        If lstPathPoints Is Nothing Then
-            lstPathPoints = New List(Of List(Of PathPoint))
-        Else
-            lstPathPoints.Clear()
-        End If
 
         If isRunning Then
             Return returnValue
         End If
 
+        Me.lstPathPoints.Clear()
+
+        StartPoint = newStartPoint
+        StopPoint = newStopPoint
+
         ' no start position set
         If StartPoint.X < 0 Or StartPoint.Y < 0 Then
-            lstPathPoints.Add(lstIntegerPathPoints)
             Return PathMessageType.PathError
         End If
 
         ' no stop position set
         If StopPoint.X < 0 Or StopPoint.Y < 0 Then
-            lstPathPoints.Add(lstIntegerPathPoints)
             Return PathMessageType.PathError
+        End If
+
+        If lstGridItem Is Nothing Then
+            Return PathMessageType.NotInitialized
+        End If
+
+        lstGridItem(GetIndex(StartPoint, ColumnCount)).SetItemType(GridItemType.StartItem)
+        lstGridItem(GetIndex(StopPoint, ColumnCount)).SetItemType(GridItemType.StopItem)
+
+        If StartPoint.X = StopPoint.X And StartPoint.Y = StopPoint.Y Then
+            Return PathMessageType.StartEndPointsEqual
         End If
 
         bRunning = True
@@ -53,7 +70,7 @@ Public Class PathfindingSingle
         returnValue = PathMessageType.PathFound
 
         ' find path by moving backwards (from end to start)
-        While (curPathPoint.Point.X <> StartPoint.X Or curPathPoint.Point.Y <> StartPoint.Y)
+        While (curPathPoint.Point.X <> startPoint.X Or curPathPoint.Point.Y <> startPoint.Y)
             ' remember current value
             curPathPoint.StepValue = lstGridItem(GridView.GetIndex(curPathPoint.Point.X, curPathPoint.Point.Y, ColumnCount)).GridValue
             Dim minValue As Integer = curPathPoint.StepValue
@@ -96,7 +113,7 @@ Public Class PathfindingSingle
                 lstIntegerPathPoints.Add(curPathPoint)
 
                 ' stop before start point is changed or it would turn into a pathpoint
-                If curPathPoint.Point.X = StartPoint.X And curPathPoint.Point.Y = StartPoint.Y Then
+                If curPathPoint.Point.X = startPoint.X And curPathPoint.Point.Y = startPoint.Y Then
                     Exit While
                 End If
 
@@ -110,7 +127,7 @@ Public Class PathfindingSingle
                     bRunning = False
                     DriveDiagonal = False
                     lstPathPoints.Clear()
-                    returnValue = FindPath(lstPathPoints)
+                    returnValue = FindPath(StartPoint, StopPoint, lstPathPoints)
                     DriveDiagonal = True
                 Else
                     returnValue = PathMessageType.PathBlocked
@@ -122,7 +139,10 @@ Public Class PathfindingSingle
 
         lstIntegerPathPoints.Reverse()
 
-        lstPathPoints.Add(lstIntegerPathPoints)
+        Me.lstPathPoints.Add(lstIntegerPathPoints)
+
+        lstPathPoints = Me.lstPathPoints
+
         bRunning = False
 
         Return returnValue

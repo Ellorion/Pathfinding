@@ -8,6 +8,8 @@ Public MustInherit Class Pathfinding
         PathBlocked
         PathError
         Running
+        StartEndPointsEqual
+        NotInitialized
     End Enum
 
     Public Enum Direction
@@ -26,9 +28,6 @@ Public MustInherit Class Pathfinding
     Protected bRunning As Boolean = False
     Protected myColumnCount As Integer = 0
     Protected myRowCount As Integer = 0
-    Protected bDebugMode As Boolean = False
-
-    Public Event GridItemValueChanged() Implements IPathfinding.GridItemValueChanged
 
     Public ReadOnly Property ColumnCount As Integer Implements IPathfinding.ColumnCount
         Get
@@ -42,8 +41,8 @@ Public MustInherit Class Pathfinding
         End Get
     End Property
 
-    Public Property StartPoint As Point = New Point(-1, -1) Implements IPathfinding.StartPoint
-    Public Property StopPoint As Point = New Point(-1, -1) Implements IPathfinding.StopPoint
+    Protected Property StartPoint As Point = New Point(-1, -1) Implements IPathfinding.StartPoint
+    Protected Property StopPoint As Point = New Point(-1, -1) Implements IPathfinding.StopPoint
 
     Public Sub Init(columnCount As Integer, rowCount As Integer, lstGridItem As List(Of GridItem)) Implements IPathfinding.Init
         myColumnCount = columnCount
@@ -68,27 +67,7 @@ Public MustInherit Class Pathfinding
         End Get
     End Property
 
-    Public Property DebugMode As Boolean Implements IPathfinding.DebugMode
-        Get
-            Return bDebugMode
-        End Get
-
-        Set(value As Boolean)
-            If bDebugMode = value Then
-                Return
-            End If
-
-            For Each myItem As GridItem In lstGridItem
-                myItem.DebugMode = value
-            Next
-
-            bDebugMode = value
-
-            RaiseEvent GridItemValueChanged()
-        End Set
-    End Property
-
-    Public MustOverride Function FindPath(ByRef lstPathPoints As List(Of List(Of PathPoint))) As PathMessageType Implements IPathfinding.FindPath
+    Public MustOverride Function FindPath(startPoint As Point, endPoint As Point, ByRef lstPathPoints As List(Of List(Of PathPoint))) As PathMessageType Implements IPathfinding.FindPath
 
     Protected Function GetNeighborPoint(curPoint As Point, newDirection As Direction) As Point
         Select Case newDirection
@@ -171,10 +150,6 @@ Public MustInherit Class Pathfinding
 
         Return GridValueReturnType.Unchanged
     End Function
-
-    Public Sub UpdateGridList(lstGridItem As List(Of GridItem)) Implements IPathfinding.UpdateGridList
-        Me.lstGridItem = lstGridItem
-    End Sub
 
     ''' <summary>
     ''' sets values for each available block on the map
@@ -309,10 +284,6 @@ Public MustInherit Class Pathfinding
         Return lstGridItem(GridView.GetIndex(StopPoint.X, StopPoint.Y, ColumnCount)).GridValue + 1
     End Function
 
-    Protected Sub RaiseGridItemValueChangedEvent()
-        RaiseEvent GridItemValueChanged()
-    End Sub
-
     Public Shared Function CountRotations(lstPathPoints As List(Of PathPoint)) As Integer
         Dim numRotation As Integer = 0
 
@@ -339,5 +310,13 @@ Public MustInherit Class Pathfinding
         End If
 
         Return 0
+    End Function
+
+    Public Shared Function GetIndex(newPoint As Point, ColumnCount As Integer) As Integer
+        Return GetIndex(newPoint.X, newPoint.Y, columnCount)
+    End Function
+
+    Public Shared Function GetIndex(x As Integer, y As Integer, ColumnCount As Integer) As Integer
+        Return y * columnCount + x
     End Function
 End Class

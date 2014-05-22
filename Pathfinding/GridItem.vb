@@ -11,12 +11,11 @@ Public Class GridItem
     Dim penStop As Pen = Pens.Red
     Dim penDefault As Pen = Pens.Black
     Dim penPath As Pen = Pens.Blue
-    Dim brushWall As Brush
+    Dim brushWall As Brush = Brushes.Black
 
     Dim type As GridItemType
     Dim myGridValue As Integer
     Dim myStepValue As Integer
-    Dim bDebugMode As Boolean
 
     Public Enum GridItemType
         DefaultItem
@@ -25,25 +24,6 @@ Public Class GridItem
         WallItem
         PathItem
     End Enum
-
-    Public Property DebugMode As Boolean
-        Get
-            Return bDebugMode
-        End Get
-
-        Set(value As Boolean)
-
-            If value Then
-                brushWall = Brushes.Yellow
-            Else
-                brushWall = Brushes.Black
-            End If
-
-            bDebugMode = value
-
-            DrawGridItem()
-        End Set
-    End Property
 
     ''' <summary>
     '''  absolute value of a point (used for pathfinding)
@@ -72,10 +52,8 @@ Public Class GridItem
     End Property
 
 
-    Sub New(newGridSize As Integer, newDebugMode As Boolean)
+    Sub New(newGridSize As Integer)
         gridSize = newGridSize
-
-        DebugMode = newDebugMode
 
         SetItemType(GridItemType.DefaultItem)
     End Sub
@@ -153,7 +131,7 @@ Public Class GridItem
                 End If
             Next
 
-            If (myGridValue > 0 And DebugMode = False) Or DebugMode = True Then
+            If myGridValue > 0 Then
                 g.DrawString(Math.Round(myGridValue, 2).ToString, myFont, Brushes.Black, 2, 2)
             End If
         End Using

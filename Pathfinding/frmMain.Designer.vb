@@ -34,7 +34,6 @@ Partial Class frmMain
         Me.ckbDriveEnabled = New System.Windows.Forms.CheckBox()
         Me.cboPFStategies = New System.Windows.Forms.ComboBox()
         Me.grpOptions = New System.Windows.Forms.GroupBox()
-        Me.ckbDebugMode = New System.Windows.Forms.CheckBox()
         Me.btnClearMap = New System.Windows.Forms.Button()
         Me.nudGridSize = New System.Windows.Forms.NumericUpDown()
         Me.lblGridSize = New System.Windows.Forms.Label()
@@ -183,7 +182,6 @@ Partial Class frmMain
         'grpOptions
         '
         Me.grpOptions.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.grpOptions.Controls.Add(Me.ckbDebugMode)
         Me.grpOptions.Controls.Add(Me.btnClearMap)
         Me.grpOptions.Controls.Add(Me.nudGridSize)
         Me.grpOptions.Controls.Add(Me.lblGridSize)
@@ -197,17 +195,6 @@ Partial Class frmMain
         Me.grpOptions.TabIndex = 2
         Me.grpOptions.TabStop = False
         Me.grpOptions.Text = "Options"
-        '
-        'ckbDebugMode
-        '
-        Me.ckbDebugMode.AutoSize = True
-        Me.ckbDebugMode.Location = New System.Drawing.Point(37, 19)
-        Me.ckbDebugMode.Name = "ckbDebugMode"
-        Me.ckbDebugMode.Size = New System.Drawing.Size(58, 17)
-        Me.ckbDebugMode.TabIndex = 1
-        Me.ckbDebugMode.Text = "&Debug"
-        Me.ckbDebugMode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        Me.ckbDebugMode.UseVisualStyleBackColor = True
         '
         'btnClearMap
         '
@@ -338,7 +325,6 @@ Partial Class frmMain
     Friend WithEvents nudGridSize As System.Windows.Forms.NumericUpDown
     Friend WithEvents lblGridSize As System.Windows.Forms.Label
     Friend WithEvents btnClearMap As System.Windows.Forms.Button
-    Friend WithEvents ckbDebugMode As System.Windows.Forms.CheckBox
     Friend WithEvents StatusStrip As System.Windows.Forms.StatusStrip
     Friend WithEvents tsStatus As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents ckbDriveEnabled As System.Windows.Forms.CheckBox

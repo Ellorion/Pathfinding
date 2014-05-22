@@ -37,7 +37,6 @@ Public Class frmMain
             pf = New PathfindingSingle
         End If
 
-        pf.DebugMode = ckbDebugMode.Checked
         pf.AvoidRotations = ckbAvoidRotation.Checked
 
         If gv Is Nothing Then
@@ -58,7 +57,6 @@ Public Class frmMain
         btnStopPos.Image = CreateIcon(Brushes.Red)
         btnWall.Image = CreateIcon(Brushes.Black)
 
-        pf.DebugMode = ckbDebugMode.Checked
         pf.AvoidRotations = ckbAvoidRotation.Checked
 
         gv.CreateGrid(nudColumnCount.Value, nudRowCount.Value)
@@ -91,6 +89,29 @@ Public Class frmMain
         posType = GridItemType.WallItem
     End Sub
 
+    Private Sub PathfindingTest()
+        Dim columns As Integer = 20
+        Dim rows As Integer = 10
+
+        Dim lstGridItem As New List(Of GridItem)
+
+        For i As Integer = 0 To (columns * rows - 1)
+            lstGridItem.Add(New GridItem(1))
+        Next
+
+        Dim pf As New PathfindingSingle(columns, rows, lstGridItem)
+
+        Dim lstPaths As List(Of List(Of PathPoint)) = Nothing
+
+        Dim startTime As Date = Now()
+        tsStatus.Text = pf.FindPath(New Point(0, 0), New Point(columns - 1, rows - 1), lstPaths).ToString
+        Dim endTime As Date = Now()
+
+        Dim diffTime As TimeSpan = endTime.Subtract(startTime)
+
+        tsStatus.Text += " Time(sec): " + diffTime.Seconds.ToString + "." + diffTime.Milliseconds.ToString.PadLeft(3, "0")
+    End Sub
+
     Private Sub btnStartPathfinding_Click(sender As System.Object, e As System.EventArgs) Handles btnStartPathfinding.Click
         If pf.isRunning Or isDriving Then
             Exit Sub
@@ -100,7 +121,7 @@ Public Class frmMain
         Application.DoEvents()
 
         Dim startTime As Date = Now()
-        Dim pfmsg As PathMessageType = pf.FindPath(lstPaths)
+        Dim pfmsg As PathMessageType = pf.FindPath(gv.StartPoint, gv.StopPoint, lstPaths)
         Dim endTime As Date = Now()
 
         Dim diffTime As TimeSpan = endTime.Subtract(startTime)
@@ -112,6 +133,10 @@ Public Class frmMain
                 statusMsg = "Start or Stop-Position not set!"
             Case PathMessageType.PathBlocked
                 statusMsg = "No available path cound be found"
+            Case PathMessageType.StartEndPointsEqual
+                statusMsg = "Start-/Endpoint as the same, no path available"
+            Case PathMessageType.NotInitialized
+                statusMsg = "Gridlist has not been initialized"
         End Select
 
         If statusMsg.Length > 0 Then
@@ -249,10 +274,6 @@ Public Class frmMain
 
     Private Sub btnClearMap_Click(sender As System.Object, e As System.EventArgs) Handles btnClearMap.Click
         gv.CreateGrid(nudColumnCount.Value, nudRowCount.Value)
-    End Sub
-
-    Private Sub ckbDebugMode_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles ckbDebugMode.CheckedChanged
-        pf.DebugMode = ckbDebugMode.Checked
     End Sub
 
     Private Sub ckbAvoidRotation_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles ckbAvoidRotation.CheckedChanged

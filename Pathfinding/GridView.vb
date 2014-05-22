@@ -7,8 +7,8 @@ Public Class GridView
     Private myColumnCount As Integer = 0
     Private myRowCount As Integer = 0
 
-    Private startPoint As New Point(-1, -1)
-    Private stopPoint As New Point(-1, -1)
+    Private myStartPoint As New Point(-1, -1)
+    Private myStopPoint As New Point(-1, -1)
 
     Public Event GridChanged(grid As Bitmap)
 
@@ -17,6 +17,18 @@ Public Class GridView
     Sub New(ByRef pf As IPathfinding)
         SwitchPathfinding(pf)
     End Sub
+
+    Public ReadOnly Property StartPoint As Point
+        Get
+            Return myStartPoint
+        End Get
+    End Property
+
+    Public ReadOnly Property StopPoint As Point
+        Get
+            Return myStopPoint
+        End Get
+    End Property
 
     Private ReadOnly Property ColumnCount As Integer
         Get
@@ -64,10 +76,10 @@ Public Class GridView
                     lstGridItem.Item(GetIndex(startPoint.X, startPoint.Y, ColumnCount)).SetItemType(GridItem.GridItemType.DefaultItem)
                 End If
 
-                startPoint = New Point(item_x, item_y)
+                myStartPoint = New Point(item_x, item_y)
                 ' overwrite overlapping points
                 If stopPoint = startPoint Then
-                    stopPoint = New Point(-1, -1)
+                    myStopPoint = New Point(-1, -1)
                 End If
 
             Case GridItemType.StopItem
@@ -75,10 +87,10 @@ Public Class GridView
                     lstGridItem.Item(GetIndex(stopPoint.X, stopPoint.Y, ColumnCount)).SetItemType(GridItem.GridItemType.DefaultItem)
                 End If
 
-                stopPoint = New Point(item_x, item_y)
+                myStopPoint = New Point(item_x, item_y)
                 ' overwrite overlapping points
                 If stopPoint = startPoint Then
-                    startPoint = New Point(-1, -1)
+                    myStartPoint = New Point(-1, -1)
                 End If
 
             Case GridItemType.WallItem
@@ -88,15 +100,7 @@ Public Class GridView
                 Exit Sub
         End Select
 
-        ' update points in pathfinding too
-        If Not myPathfinding Is Nothing Then
-            myPathfinding.StartPoint = startPoint
-            myPathfinding.StopPoint = stopPoint
-        End If
-
         lstGridItem.Item(posIndex).SetItemType(newType)
-
-        myPathfinding.UpdateGridList(lstGridItem)
 
         RaiseEvent GridChanged(GetGrid())
     End Sub
@@ -131,7 +135,7 @@ Public Class GridView
 
         ' generate griditems for current grid
         For i As Integer = 0 To (columns * rows - 1)
-            lstGridItem.Add(New GridItem(GridSize, myPathfinding.DebugMode))
+            lstGridItem.Add(New GridItem(GridSize))
         Next
 
         ' (re)init pathfinding with new grid data
@@ -179,15 +183,9 @@ Public Class GridView
         Return y * columnCount + x
     End Function
 
-    Private Sub myPathfinding_GridItemValueChanged() Handles myPathfinding.GridItemValueChanged
-        RaiseEvent GridChanged(GetGrid())
-    End Sub
-
     Public Sub SwitchPathfinding(pf As IPathfinding)
         myPathfinding = pf
 
-        myPathfinding.StartPoint = startPoint
-        myPathfinding.StopPoint = stopPoint
         myPathfinding.Init(ColumnCount, RowCount, lstGridItem)
     End Sub
 End Class

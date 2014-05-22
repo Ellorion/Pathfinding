@@ -10,6 +10,13 @@ Public Class PathfindingMultible
     Private pfInteger As New PathfindingSingle
     Private lstPathPoints As New List(Of List(Of PathPoint))
 
+    Public Sub New()
+    End Sub
+
+    Public Sub New(columnCount As Integer, rowCount As Integer, lstGridItem As List(Of GridItem))
+        Me.Init(columnCount, rowCount, lstGridItem)
+    End Sub
+
     ''' <summary>
     ''' Compute path after each new block recursivly in every useful direction
     ''' </summary>
@@ -69,7 +76,7 @@ Public Class PathfindingMultible
         End If
     End Sub
 
-    Public Overrides Function FindPath(ByRef lstPathPoints As List(Of List(Of PathPoint))) As PathMessageType
+    Public Overrides Function FindPath(newStartPoint As Point, newStopPoint As Point, ByRef lstPathPoints As List(Of List(Of PathPoint))) As PathMessageType
         Dim returnValue As PathMessageType = PathMessageType.Running
 
         If isRunning Then
@@ -77,6 +84,9 @@ Public Class PathfindingMultible
         End If
 
         Me.lstPathPoints.Clear()
+
+        StartPoint = newStartPoint
+        StopPoint = newStopPoint
 
         ' no start position set
         If StartPoint.X < 0 Or StartPoint.Y < 0 Then
@@ -88,23 +98,34 @@ Public Class PathfindingMultible
             Return PathMessageType.PathError
         End If
 
+        If lstGridItem Is Nothing Then
+            Return PathMessageType.NotInitialized
+        End If
+
+        lstGridItem(GetIndex(StartPoint, ColumnCount)).SetItemType(GridItemType.StartItem)
+        lstGridItem(GetIndex(StopPoint, ColumnCount)).SetItemType(GridItemType.StopItem)
+
+        If StartPoint.X = StopPoint.X And StartPoint.Y = StopPoint.Y Then
+            Return PathMessageType.StartEndPointsEqual
+        End If
+
         bRunning = True
 
         ' compute values for all possible blocks
         ComputeBlocksValues()
 
         Dim curPathPoint As New PathPoint
-        curPathPoint.Point = New Point(StopPoint.X, StopPoint.Y)
+        curPathPoint.Point = New Point(stopPoint.X, stopPoint.Y)
         ' generate random Direction for stoppoint
         curPathPoint.Direction = Direction.Left
 
         With pfInteger
-            .StartPoint = StartPoint
-            .StopPoint = StopPoint
+            '.StartPoint = startPoint
+            '.StopPoint = stopPoint
             .Init(ColumnCount, RowCount, lstGridItem)
             .AvoidRotations = True
             .DriveDiagonal = DriveDiagonal
-            .FindPath(lstPathPoints)
+            .FindPath(StartPoint, StopPoint, lstPathPoints)
         End With
 
         If lstPathPoints.Count = 1 Then
