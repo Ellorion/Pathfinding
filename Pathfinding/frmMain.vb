@@ -90,8 +90,8 @@ Public Class frmMain
     End Sub
 
     Private Sub PathfindingTest()
-        Dim columns As Integer = 20
-        Dim rows As Integer = 10
+        Dim columns As Integer = 200
+        Dim rows As Integer = 200
 
         Dim lstGridItem As New List(Of GridItem)
 
@@ -99,12 +99,12 @@ Public Class frmMain
             lstGridItem.Add(New GridItem(1))
         Next
 
-        Dim pf As New PathfindingSingle(columns, rows, lstGridItem)
+        Dim pf As New PathfindingMultible(columns, rows, lstGridItem)
 
         Dim lstPaths As List(Of List(Of PathPoint)) = Nothing
 
         Dim startTime As Date = Now()
-        tsStatus.Text = pf.FindPath(New Point(0, 0), New Point(columns - 1, rows - 1), lstPaths).ToString
+        tsStatus.Text = pf.FindPath(New Point(0, 0), New Point(columns / 2, rows / 2), lstPaths).ToString
         Dim endTime As Date = Now()
 
         Dim diffTime As TimeSpan = endTime.Subtract(startTime)

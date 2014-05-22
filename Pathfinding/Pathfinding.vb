@@ -120,6 +120,7 @@ Public MustInherit Class Pathfinding
 
     Protected Function SetValueOfSurroundingBlock(curItem As GridItem, curPoint As Point, newDirection As Direction, ByRef lstBlocksWithNewValues As List(Of Point)) As GridValueReturnType
         Dim neighborPoint As Point = GetNeighborPoint(curPoint, newDirection)
+        Dim nextStepValue As Integer = 10
 
         ' neighbor griditem on map?
         If Not inArea(neighborPoint) Then
@@ -128,23 +129,21 @@ Public MustInherit Class Pathfinding
 
         Dim nextItem As GridItem = lstGridItem.Item(GridView.GetIndex(neighborPoint.X, neighborPoint.Y, myColumnCount))
 
-        If nextItem.GridValue < 0 And nextItem.GetItemType() <> GridItemType.WallItem Then
-            If newDirection = Direction.Left Or newDirection = Direction.Top Or newDirection = Direction.Right Or newDirection = Direction.Bottom Then
-                ' horizinal & vertical
-                nextItem.StepValue = 10
-            Else
+        If nextItem.GetItemType() <> GridItemType.WallItem Then
+            If newDirection = Direction.TopLeft Or newDirection = Direction.TopRight Or newDirection = Direction.BottomLeft Or newDirection = Direction.BottomRight Then
                 ' diagonal blocks
-                nextItem.StepValue = 14
+                nextStepValue = 14
             End If
 
-            nextItem.GridValue = curItem.GridValue + nextItem.StepValue
+            ' update if not set or new possible value is better than current value
+            If nextItem.GridValue < 0 Or nextItem.GridValue > curItem.GridValue + nextStepValue Then
+                nextItem.GridValue = curItem.GridValue + nextStepValue
 
-            lstBlocksWithNewValues.Add(neighborPoint)
+                lstBlocksWithNewValues.Add(neighborPoint)
 
-            Return GridValueReturnType.ValueUpdated
-        End If
-
-        If nextItem.GetItemType() = GridItemType.WallItem Then
+                Return GridValueReturnType.ValueUpdated
+            End If
+        Else
             Return GridValueReturnType.IsWall
         End If
 
@@ -156,7 +155,6 @@ Public MustInherit Class Pathfinding
     ''' </summary>
     Protected Sub ComputeBlocksValues()
         Dim lstBlocksWithNewValue As New List(Of Point)
-        Dim lstUpdatedDirection As New List(Of Direction)
 
         Dim lstDirectionsBase As New List(Of Direction)
         lstDirectionsBase.Add(Direction.Left)
@@ -179,27 +177,16 @@ Public MustInherit Class Pathfinding
 
             ' start with startItem, then check every neighbor that got a value
             If myItem.GridValue >= 0 Then
-                Dim bAnyUpdated As Boolean = False
-
                 For Each myDirection As Direction In lstDirectionsBase
-                    Dim return_type As GridValueReturnType = SetValueOfSurroundingBlock(myItem, curPoint, myDirection, lstBlocksWithNewValue)
-
-                    Select Case return_type
-                        Case GridValueReturnType.ValueUpdated
-                            lstUpdatedDirection.Add(myDirection)
-                    End Select
+                    SetValueOfSurroundingBlock(myItem, curPoint, myDirection, lstBlocksWithNewValue)
                 Next
 
                 If DriveDiagonal Then
-                    If SetValueOfSurroundingBlock(myItem, curPoint, Direction.TopLeft, lstBlocksWithNewValue) = GridValueReturnType.ValueUpdated Then lstUpdatedDirection.Add(Direction.TopLeft)
-                    If SetValueOfSurroundingBlock(myItem, curPoint, Direction.TopRight, lstBlocksWithNewValue) = GridValueReturnType.ValueUpdated Then lstUpdatedDirection.Add(Direction.TopRight)
-                    If SetValueOfSurroundingBlock(myItem, curPoint, Direction.BottomLeft, lstBlocksWithNewValue) = GridValueReturnType.ValueUpdated Then lstUpdatedDirection.Add(Direction.BottomLeft)
-                    If SetValueOfSurroundingBlock(myItem, curPoint, Direction.BottomRight, lstBlocksWithNewValue) = GridValueReturnType.ValueUpdated Then lstUpdatedDirection.Add(Direction.BottomRight)
+                    SetValueOfSurroundingBlock(myItem, curPoint, Direction.TopLeft, lstBlocksWithNewValue)
+                    SetValueOfSurroundingBlock(myItem, curPoint, Direction.TopRight, lstBlocksWithNewValue)
+                    SetValueOfSurroundingBlock(myItem, curPoint, Direction.BottomLeft, lstBlocksWithNewValue)
+                    SetValueOfSurroundingBlock(myItem, curPoint, Direction.BottomRight, lstBlocksWithNewValue)
                 End If
-
-                'If lstUpdatedDirection.Count > 0 Then
-                lstUpdatedDirection.Clear()
-                'End If
             End If
         End While
     End Sub
@@ -224,8 +211,9 @@ Public MustInherit Class Pathfinding
                 If isWall(curPathPoint.Point, Direction.Right) Then Return
         End Select
 
-        ' better value found?
+        ' better value found? [h/v griditems "and" diagonal]
         If newValue <= curPathPoint.StepValue And newValue <= minValue Then
+            'If newValue <= curPathPoint.StepValue And newValue <= minValue Then
             ' mark old bad values as deleteable
             If DriveDiagonal Then
                 Dim lstDeleteableValues As New List(Of PathPoint)
@@ -305,7 +293,7 @@ Public MustInherit Class Pathfinding
     End Function
 
     Public Shared Function CountRotations(lstPathPoints As List(Of List(Of PathPoint))) As Integer
-        If lstPathPoints.Count = 1 Then
+        If lstPathPoints.Count >= 1 Then
             Return CountRotations(lstPathPoints.Item(0))
         End If
 
