@@ -14,8 +14,8 @@ Public Class GridItem
     Dim brushWall As Brush
 
     Dim type As GridItemType
-    Dim myGridValue As Single
-    Dim myStepValue As Single
+    Dim myGridValue As Integer
+    Dim myStepValue As Integer
     Dim bDebugMode As Boolean
 
     Public Enum GridItemType
@@ -48,12 +48,12 @@ Public Class GridItem
     ''' <summary>
     '''  absolute value of a point (used for pathfinding)
     ''' </summary>
-    Property GridValue As Single
+    Property GridValue As Integer
         Get
             Return myGridValue
         End Get
 
-        Set(value As Single)
+        Set(value As Integer)
             myGridValue = value
         End Set
     End Property
@@ -61,12 +61,12 @@ Public Class GridItem
     ''' <summary>
     ''' relative value of a point (used for estimation)
     ''' </summary>
-    Property StepValue As Single
+    Property StepValue As Integer
         Get
             Return myStepValue
         End Get
 
-        Set(value As Single)
+        Set(value As Integer)
             myStepValue = value
         End Set
     End Property
@@ -107,13 +107,13 @@ Public Class GridItem
 
         Select Case type
             Case GridItemType.DefaultItem
-                myGridValue = -1.0
+                myGridValue = -1
             Case GridItemType.StartItem
-                myGridValue = 0.0
+                myGridValue = 0
             Case GridItemType.StopItem
-                myGridValue = -2.0
+                myGridValue = -2
             Case GridItemType.WallItem
-                myGridValue = -3.0
+                myGridValue = -3
         End Select
 
         ' "mark" for update at next drawing request
@@ -153,7 +153,7 @@ Public Class GridItem
                 End If
             Next
 
-            If (myGridValue > 0.0 And DebugMode = False) Or DebugMode = True Then
+            If (myGridValue > 0 And DebugMode = False) Or DebugMode = True Then
                 g.DrawString(Math.Round(myGridValue, 2).ToString, myFont, Brushes.Black, 2, 2)
             End If
         End Using

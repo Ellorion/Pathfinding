@@ -1,13 +1,13 @@
 ﻿Imports Pathfinding.GridItem
 
 ''' <summary>
-''' Handles all about Pathfinding (returns a single random path)
+''' Handles all about Pathfinding (returns a Integer random path)
 ''' </summary>
 Public Class PathfindingSingle
     Inherits Pathfinding
 
     Public Overrides Function FindPath(ByRef lstPathPoints As List(Of List(Of PathPoint))) As PathMessageType
-        Dim lstSinglePathPoints As New List(Of PathPoint)
+        Dim lstIntegerPathPoints As New List(Of PathPoint)
         Dim returnValue As PathMessageType = PathMessageType.Running
 
         If lstPathPoints Is Nothing Then
@@ -22,13 +22,13 @@ Public Class PathfindingSingle
 
         ' no start position set
         If StartPoint.X < 0 Or StartPoint.Y < 0 Then
-            lstPathPoints.Add(lstSinglePathPoints)
+            lstPathPoints.Add(lstIntegerPathPoints)
             Return PathMessageType.PathError
         End If
 
         ' no stop position set
         If StopPoint.X < 0 Or StopPoint.Y < 0 Then
-            lstPathPoints.Add(lstSinglePathPoints)
+            lstPathPoints.Add(lstIntegerPathPoints)
             Return PathMessageType.PathError
         End If
 
@@ -48,7 +48,7 @@ Public Class PathfindingSingle
 
         Dim stopPathPoint As New PathPoint
         stopPathPoint.Point = StopPoint
-        lstSinglePathPoints.Add(stopPathPoint)
+        lstIntegerPathPoints.Add(stopPathPoint)
 
         returnValue = PathMessageType.PathFound
 
@@ -56,7 +56,7 @@ Public Class PathfindingSingle
         While (curPathPoint.Point.X <> StartPoint.X Or curPathPoint.Point.Y <> StartPoint.Y)
             ' remember current value
             curPathPoint.StepValue = lstGridItem(GridView.GetIndex(curPathPoint.Point.X, curPathPoint.Point.Y, ColumnCount)).GridValue
-            Dim minValue As Single = curPathPoint.StepValue
+            Dim minValue As Integer = curPathPoint.StepValue
 
             SaveBestPoint(curPathPoint, Direction.Left, minValue, lstPossiblePoints)
             SaveBestPoint(curPathPoint, Direction.Top, minValue, lstPossiblePoints)
@@ -93,7 +93,7 @@ Public Class PathfindingSingle
 
                 lstPossiblePoints.Clear()
 
-                lstSinglePathPoints.Add(curPathPoint)
+                lstIntegerPathPoints.Add(curPathPoint)
 
                 ' stop before start point is changed or it would turn into a pathpoint
                 If curPathPoint.Point.X = StartPoint.X And curPathPoint.Point.Y = StartPoint.Y Then
@@ -102,7 +102,7 @@ Public Class PathfindingSingle
 
                 lstGridItem.Item(GridView.GetIndex(curPathPoint.Point.X, curPathPoint.Point.Y, ColumnCount)).SetItemType(GridItemType.PathItem)
             Else
-                lstSinglePathPoints.Clear()
+                lstIntegerPathPoints.Clear()
 
                 ResetValues()
 
@@ -120,9 +120,9 @@ Public Class PathfindingSingle
             End If
         End While
 
-        lstSinglePathPoints.Reverse()
+        lstIntegerPathPoints.Reverse()
 
-        lstPathPoints.Add(lstSinglePathPoints)
+        lstPathPoints.Add(lstIntegerPathPoints)
         bRunning = False
 
         Return returnValue

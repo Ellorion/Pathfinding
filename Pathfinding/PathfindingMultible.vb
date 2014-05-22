@@ -7,7 +7,7 @@
 Public Class PathfindingMultible
     Inherits Pathfinding
 
-    Private pfSingle As New PathfindingSingle
+    Private pfInteger As New PathfindingSingle
     Private lstPathPoints As New List(Of List(Of PathPoint))
 
     ''' <summary>
@@ -28,7 +28,7 @@ Public Class PathfindingMultible
         If (curPathPoint.Point.X <> StartPoint.X Or curPathPoint.Point.Y <> StartPoint.Y) Then
             ' remember current value
             curPathPoint.StepValue = GetGridValue(curPathPoint.Point)
-            Dim minValue As Single = curPathPoint.StepValue
+            Dim minValue As Integer = curPathPoint.StepValue
 
             Dim lstPossiblePathPoints As New List(Of PathPoint)
 
@@ -77,7 +77,7 @@ Public Class PathfindingMultible
         End If
 
         Me.lstPathPoints.Clear()
-        
+
         ' no start position set
         If StartPoint.X < 0 Or StartPoint.Y < 0 Then
             Return PathMessageType.PathError
@@ -98,7 +98,7 @@ Public Class PathfindingMultible
         ' generate random Direction for stoppoint
         curPathPoint.Direction = Direction.Left
 
-        With pfSingle
+        With pfInteger
             .StartPoint = StartPoint
             .StopPoint = StopPoint
             .Init(ColumnCount, RowCount, lstGridItem)

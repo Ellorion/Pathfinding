@@ -149,15 +149,13 @@ Public MustInherit Class Pathfinding
 
         Dim nextItem As GridItem = lstGridItem.Item(GridView.GetIndex(neighborPoint.X, neighborPoint.Y, myColumnCount))
 
-        If nextItem.GridValue < 0.0 And nextItem.GetItemType() <> GridItemType.WallItem Then
+        If nextItem.GridValue < 0 And nextItem.GetItemType() <> GridItemType.WallItem Then
             If newDirection = Direction.Left Or newDirection = Direction.Top Or newDirection = Direction.Right Or newDirection = Direction.Bottom Then
                 ' horizinal & vertical
-                nextItem.StepValue = 1
+                nextItem.StepValue = 10
             Else
                 ' diagonal blocks
-                Dim factor As Integer = 1
-                Dim quadFactor = factor * factor
-                nextItem.StepValue = Math.Sqrt(quadFactor + quadFactor)
+                nextItem.StepValue = 14
             End If
 
             nextItem.GridValue = curItem.GridValue + nextItem.StepValue
@@ -205,7 +203,7 @@ Public MustInherit Class Pathfinding
             Dim myItem As GridItem = lstGridItem(GridView.GetIndex(curPoint, ColumnCount))
 
             ' start with startItem, then check every neighbor that got a value
-            If myItem.GridValue >= 0.0 Then
+            If myItem.GridValue >= 0 Then
                 Dim bAnyUpdated As Boolean = False
 
                 For Each myDirection As Direction In lstDirectionsBase
@@ -231,25 +229,24 @@ Public MustInherit Class Pathfinding
         End While
     End Sub
 
-    Protected Function SaveBestPoint(curPathPoint As PathPoint, newDirection As Direction, ByRef minValue As Single, ByRef lstPossiblePoints As List(Of PathPoint)) As Boolean
-        'Dim newValue As Single = GetGridValue(GetNeighborPoint(curPathPoint.Point, newDirection))
+    Protected Sub SaveBestPoint(curPathPoint As PathPoint, newDirection As Direction, ByRef minValue As Integer, ByRef lstPossiblePoints As List(Of PathPoint))
         Dim neighborPoint As Point = GetNeighborPoint(curPathPoint.Point, newDirection)
-        Dim newValue As Single = GetGridValue(neighborPoint)
+        Dim newValue As Integer = GetGridValue(neighborPoint)
 
         ' if diag -> check other 2 sides, if at least one is a wall -> don't save it!
         Select Case newDirection
             Case Direction.TopLeft
-                If isWall(curPathPoint.Point, Direction.Top) Then Return 0.0
-                If isWall(curPathPoint.Point, Direction.Left) Then Return 0.0
+                If isWall(curPathPoint.Point, Direction.Top) Then Return
+                If isWall(curPathPoint.Point, Direction.Left) Then Return
             Case Direction.TopRight
-                If isWall(curPathPoint.Point, Direction.Top) Then Return 0.0
-                If isWall(curPathPoint.Point, Direction.Right) Then Return 0.0
+                If isWall(curPathPoint.Point, Direction.Top) Then Return
+                If isWall(curPathPoint.Point, Direction.Right) Then Return
             Case Direction.BottomLeft
-                If isWall(curPathPoint.Point, Direction.Bottom) Then Return 0.0
-                If isWall(curPathPoint.Point, Direction.Left) Then Return 0.0
+                If isWall(curPathPoint.Point, Direction.Bottom) Then Return
+                If isWall(curPathPoint.Point, Direction.Left) Then Return
             Case Direction.BottomRight
-                If isWall(curPathPoint.Point, Direction.Bottom) Then Return 0.0
-                If isWall(curPathPoint.Point, Direction.Right) Then Return 0.0
+                If isWall(curPathPoint.Point, Direction.Bottom) Then Return
+                If isWall(curPathPoint.Point, Direction.Right) Then Return
         End Select
 
         ' better value found?
@@ -288,9 +285,7 @@ Public MustInherit Class Pathfinding
 
             minValue = newValue
         End If
-
-        Return True
-    End Function
+    End Sub
 
     Protected Sub ResetValues()
         For Each myItem As GridItem In lstGridItem
@@ -298,16 +293,16 @@ Public MustInherit Class Pathfinding
         Next
     End Sub
 
-    Protected Function GetGridValue(newPoint As Point) As Single
+    Protected Function GetGridValue(newPoint As Point) As Integer
         Return GetGridValue(newPoint.X, newPoint.Y)
     End Function
 
-    Protected Function GetGridValue(x As Integer, y As Integer) As Single
+    Protected Function GetGridValue(x As Integer, y As Integer) As Integer
         ' coordinates are in the grid?
         If inArea(New Point(x, y)) Then
-            Dim value As Single = lstGridItem(GridView.GetIndex(x, y, ColumnCount)).GridValue
+            Dim value As Integer = lstGridItem(GridView.GetIndex(x, y, ColumnCount)).GridValue
 
-            If value >= 0.0 Then Return value
+            If value >= 0 Then Return value
         End If
 
         ' return high value, if it doesn't exists, so it won't be chosen as a good path

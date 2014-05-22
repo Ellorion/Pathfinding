@@ -1,5 +1,5 @@
 ﻿Imports Pathfinding.GridItem
-Imports Pathfinding.PathfindingSingle
+Imports Pathfinding.Pathfinding
 
 Public Class frmMain
     Dim pf As IPathfinding
@@ -120,7 +120,7 @@ Public Class frmMain
         End If
 
         If lstPaths.Count = 1 Then
-            Dim estimationSum As Single = 0.0
+            Dim estimationSum As Integer = 0
 
             For Each myPathPoint As PathPoint In lstPaths.Item(0)
                 estimationSum += myPathPoint.EstimationValue
@@ -132,17 +132,17 @@ Public Class frmMain
         Else
             statusMsg = "[Paths found: " + lstPaths.Count.ToString + "]"
 
-            Dim curBestEstimation As Single = 0.0
+            Dim curBestEstimation As Integer = 0
             Dim lstBestPaths As New List(Of List(Of PathPoint))
 
             For Each myPathPoints As List(Of PathPoint) In lstPaths
-                Dim curEstimation As Single = 0.0
+                Dim curEstimation As Integer = 0
 
                 For Each myPathPoint As PathPoint In myPathPoints
                     curEstimation += myPathPoint.EstimationValue
                 Next
 
-                If curEstimation < curBestEstimation Or curBestEstimation <= 0.0 Then
+                If curEstimation < curBestEstimation Or curBestEstimation <= 0 Then
                     curBestEstimation = curEstimation
                     lstBestPaths.Clear()
                     lstBestPaths.Add(myPathPoints)
